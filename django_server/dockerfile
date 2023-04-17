@@ -1,0 +1,7 @@
+FROM python:alpine
+ENV PYTHONUNBUFFERED 1
+EXPOSE 80
+ENTRYPOINT ["python3 /bootstrap/start.py"]
+VOLUME ["/server/data"]
+COPY bootstrap /bootstrap
+RUN /bootstrap/install.sh
