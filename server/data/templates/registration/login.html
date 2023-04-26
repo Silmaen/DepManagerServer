@@ -1,0 +1,24 @@
+{% extends 'registration/base_registration.html' %}
+
+{%block mainsection %}
+<div class="Article user_form">
+    <div class="ArticleHeader">
+        <h4>Login</h4>
+    </div>
+    <div class="ArticleContent">
+        <p>Afin de pouvoir accéder au contenu du site, veuillez entrer vos identifiants:</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button id="submit" class="comment-btn mdi mdi-login">Login</button>
+        </form>
+        <p>Vous avez perdu vos identifiants?
+        <a class="comment-btn mdi mdi-account-reactivate-outline" href="{% url 'password_reset' %}">Reset</a></p>
+        <p>Vous n’avez pas d’identifiants?
+        <a class="comment-btn mdi mdi-account-plus-outline" href="{% url 'register' %}">Register</a></p>
+    </div>
+    <div class="ArticleFooter">
+    <a class="comment-btn mdi mdi-arrow-left-circle-outline" href="{% url 'index' %}">Retour</a>
+    </div>
+</div>
+{% endblock %}

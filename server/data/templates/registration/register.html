@@ -1,0 +1,50 @@
+{% extends 'registration/base_registration.html' %}
+
+{%block mainsection %}
+<div class="Article user_form">
+    <div class="ArticleHeader">
+        <h4>Nouvel utilisateur</h4>
+    </div>
+    <div class="ArticleContent user_form">
+        <p>Veuillez remplir ce formulaire afin d’être enregistré comme utilisateur:</p>
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if profile_form.errors %}
+            {% for field in profile_form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in profile_form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+
+            {% csrf_token %}
+            {{ form.as_p }}
+            {{ profile_form.as_p }}
+            <button id="submit" class="comment-btn mdi mdi-account-plus-outline">Register</button>
+        </form>
+    </div>
+    <div class="ArticleFooter">
+        <a class="comment-btn mdi mdi-arrow-left-circle-outline"  href="{% url 'login' %}">Retour</a>
+    </div>
+</div>
+{% endblock %}
