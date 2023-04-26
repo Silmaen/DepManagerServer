@@ -1,0 +1,73 @@
+{% load static %}
+<html lang="fr">
+<head>
+    <title>Dependency Registry Browser</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="robots" content="index,follow">
+    <meta name="author" content="Argawaen">
+    <meta name="description" content="le contenu">
+    <meta name="keywords" content="FUCK!!">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
+</head>
+<body>
+<header class="header">
+    <div class="navbar container">
+        <A href="/" class="site-title">
+            <img src="{% static 'img/logo.svg' %}">
+            <H1>Dependency Registry Browser</H1>
+        </A>
+        <div class="site-user">
+            {% if user.is_authenticated %}
+            <a class="button" href="{% url 'profile' %}">
+                <span class="material-symbols-outlined">person</span>
+                {{ user.username }}
+            </a>:
+            <a class="button" href="{% url 'logout' %}">
+                <span class="material-symbols-outlined">logout</span>
+                Logout
+            </a>
+            {% else %}
+            <a class="button" href="{% url 'login' %}">
+                <span class="material-symbols-outlined">login</span>
+                login
+            </a>
+            {% endif %}
+        </div>
+        <nav class="site-nav">
+            <ul class="navmenu">
+                <li class="navitem"><A href="/packages">Packages</A></li>
+                <li class="navitem"><A href="/users">Users</A></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="page-title">
+        <H1>Profile</H1>
+    </div>
+</header>
+<div class="content">
+    {% block content %}
+    je suis le centre.
+    {% endblock %}
+</div>
+<footer class="footer">
+    <p>
+        <a href="https://github.com/Silmaen/DepManagerServer">
+            <img src="{% static 'img/logo.svg' %}">
+            Package Registry Browser
+        </a>
+        · Version: {{ version.number }} ({{ Version.hash }})
+    </p>
+    <p>
+         © Designed by Argawaen, all rights reserved. The site design, the logo are trademarks and/or registered trademarks of Argawaen.
+    </p>
+    <A href="https://fonts.google.com/icons">
+        <span class="material-symbols-outlined">grading</span>
+        Icons from Material Design Icon.
+    </A>
+
+</footer>
+</body>
