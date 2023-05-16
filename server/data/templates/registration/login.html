@@ -5,20 +5,27 @@
     <div class="ArticleHeader">
         <h4>Login</h4>
     </div>
-    <div class="ArticleContent">
-        <p>Afin de pouvoir accéder au contenu du site, veuillez entrer vos identifiants:</p>
-        <form method="post">
+    <div class="ArticleContent centering-col">
+        <p>Please login to access the content</p>
+        <form class="centering-col" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button id="submit" class="comment-btn mdi mdi-login">Login</button>
+            <button id="submit" class="button"><span class="material-symbols-outlined">login</span>Login</button>
         </form>
-        <p>Vous avez perdu vos identifiants?
-        <a class="comment-btn mdi mdi-account-reactivate-outline" href="{% url 'password_reset' %}">Reset</a></p>
-        <p>Vous n’avez pas d’identifiants?
-        <a class="comment-btn mdi mdi-account-plus-outline" href="{% url 'register' %}">Register</a></p>
+        <div class="centering-row">
+            <p >Lost credentials?</p>
+            <a class="button" href="{% url 'password_reset' %}"><span class="material-symbols-outlined">lock_reset</span>Reset</a>
+        </div>
+        <div class="centering-row">
+            <p>Request credentials?</p>
+            <a class="button" href="{% url 'register' %}"><span class="material-symbols-outlined">person_add</span>Register</a>
+        </div>
     </div>
     <div class="ArticleFooter">
-    <a class="comment-btn mdi mdi-arrow-left-circle-outline" href="{% url 'index' %}">Retour</a>
+    <a class="button" href="{% url 'index' %}">
+        <span class="material-symbols-outlined">arrow_circle_left</span>
+        Back
+    </a>
     </div>
 </div>
 {% endblock %}

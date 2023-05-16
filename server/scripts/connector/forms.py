@@ -1,6 +1,7 @@
 """Fichier UserProfile.users.forms.py les formulaires utilisateur"""
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
 from .models import UserProfile
 
 
@@ -8,6 +9,7 @@ class CustomUserCreationForm(UserCreationForm):
     """
     Formulaire pour la création d’un utilisateur.
     """
+
     class Meta(UserCreationForm.Meta):
         """
         Meta informations
@@ -31,18 +33,20 @@ class ProfileForm(forms.ModelForm):
     """
     Formulaire d’affichage des informations de profil
     """
+
     class Meta:
         """
         Meta informations
         """
         model = UserProfile
-        fields = ('avatar', 'birthDate')
+        fields = ()
 
 
 class CustomUserChangeForm(UserChangeForm):
     """
     Formulaire pour la modification de user
     """
+
     class Meta(UserChangeForm.Meta):
         """
         Meta informations

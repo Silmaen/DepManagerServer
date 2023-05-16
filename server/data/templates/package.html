@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="ArticleContent">
+    <form method="post">
+        {% csrf_token %}
+        <table class="title_tab centering-row">
+            <tr>
+                <td>name</td>
+                <td>version</td>
+                <td>os</td>
+                <td>arch</td>
+                <td>kind</td>
+                <td>compiler</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><input type=search name="name" id="name"></td>
+                <td><input type=search name="version" id="version"></td>
+                <td><input type=search name="os" id="os" list=oses value=any>
+                    <datalist id=oses>
+                        <option>any
+                        <option>windows
+                        <option>linux
+                    </datalist>
+                </td>
+                <td><input type=search name="arch" id="arch" list=arches value=any>
+                    <datalist id=arches>
+                        <option>any
+                        <option>x64
+                        <option>aarch64
+                    </datalist>
+                </td>
+                <td><input type=search name="kind" id="kind" list=kinds value=any>
+                    <datalist id=kinds>
+                        <option>any
+                        <option>static
+                        <option>shared
+                        <option>header
+                    </datalist>
+                </td>
+                <td><input type=search name="compiler" id="compiler" list=compilers value=any>
+                    <datalist id=compilers>
+                        <option>any
+                        <option>gnu
+                        <option>msvc
+                    </datalist>
+                </td>
+                <td>
+                    <button id="filter" class="button-icon"><span class="material-symbols-outlined">filter_alt</span>
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="PackageList">
+    {% for pack in package %}
+    <div class="Package">
+        <div class="PackageHeader">
+            <div class="PackageName"><a href="{% url 'detail_package' pack.name pack.version %}">{{ pack.name }}</a>
+            </div>
+            <div class="PackageVersion">{{ pack.version }}</div>
+            <a href="{% url 'detail_package' pack.name pack.version %}" class="button-icon last-button">
+                <span class="material-symbols-outlined">info</span>
+            </a>
+        </div>
+        <div class="PackageFlavors">
+            {% for flavor in pack.combinations %}
+            <div class="PackageFlavor">
+                {{ flavor.os }}, {{ flavor.arch }}, {{ flavor.kind }}, {{ flavor.compiler }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{{ debug | safe }}
+{% endblock %}
