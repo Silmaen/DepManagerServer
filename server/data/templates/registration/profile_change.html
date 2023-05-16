@@ -3,7 +3,7 @@
 {%block mainsection %}
 <div class="Article user_form">
     <div class="ArticleHeader">
-        <h4 class="mdi mdi-account-circle">{{ user }}</h4>
+        <h4><span class="material-symbols-outlined">account_circle</span>{{ user }}</h4>
     </div>
     <div class="ArticleContent user_form">
         {% if form.errors %}
@@ -38,11 +38,17 @@
             {% csrf_token %}
             {{ form.as_p }}
             {{ profile_form.as_p }}
-            <button id="submit" class="comment-btn mdi mdi-account-plus-outline">Sauver</button>
+            <button id="submit" class="button">
+                <span class="material-symbols-outlined">person_add</span>
+                Sauver
+            </button>
         </form>
     </div>
     <div class="ArticleFooter">
-        <a class="comment-btn mdi mdi-arrow-left-circle-outline"  href="{% url 'profile' %}">Retour</a>
+        <a class="button"  href="{% url 'profile' %}">
+            <span class="material-symbols-outlined">arrow_circle_left</span>
+            Retour
+        </a>
     </div>
 </div>
 {% endblock %}

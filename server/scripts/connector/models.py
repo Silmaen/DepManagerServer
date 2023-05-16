@@ -8,8 +8,6 @@ from django.dispatch import receiver
 class UserProfile(models.Model):
     """Exemple de profile"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    avatar = models.ImageField(blank=True, null=True, verbose_name="avatar", upload_to='user_avatar')
-    birthDate = models.DateField(blank=True, null=True, verbose_name="date de naissance")
 
 
 @receiver(post_save, sender=User)

@@ -1,0 +1,128 @@
+.Article {
+    display: flex;
+    flex-flow: column nowrap;
+    border-radius: 1.5em;
+    background-color: var(--theme-page-title-bg-color);
+    color: var(--theme-page-title-color);
+    max-width: 100%;
+    min-width: 100px;
+    margin: 1%;
+    padding: 0.5em;
+}
+.Article a {
+    color: var(--theme-article-color);
+}
+.Article a:hover {
+    color: var(--theme-article-color-hv);
+}
+.ArticleHeader{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-flow: row nowrap;
+    justify-content: center;
+    padding: 0.5em 0.1em;
+}
+.ArticleContent{
+    display: flex;
+    flex-direction: column;
+    width: 770px;
+}
+@media all and (max-width: 771px) {
+    .ArticleContent{
+        width: 100%;
+    }
+}
+.ArticleContent h1,.ArticleContent h2,.ArticleContent h3,.ArticleContent h4,.ArticleContent h5,.ArticleContent h6{
+    color: var(--theme-article-color);
+}
+.ArticleContent::before, .ArticleContent::after{
+    position: relative;
+    height: 3px;
+    left: 3%;
+    width: 94%;
+    background-color: var(--theme-article-color-sep);
+    content:"";
+}
+.ArticleFooter{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.user_form {
+    align-items: center;
+}
+.PackageList{
+    display: flex;
+    flex-direction: column;
+    width: 770px;
+}
+@media all and (max-width: 771px) {
+    .PackageList{
+        width: 100%;
+    }
+}
+.Package{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top:1em;
+    padding: 0.5em;
+    border: 1px solid var(--theme-article-color-sep);
+    border-radius:0.5em;
+}
+.PackageDetail{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top:1em;
+    padding: 0.5em;
+    border: 1px solid var(--theme-article-color-sep);
+    border-radius:0.5em;
+}
+.PackageHeader {
+    display: flex;
+    flex-flow: row nowrap;
+}
+.PackageFlavors {
+    display: flex;
+    flex-flow: column nowrap;
+    padding-left: 3em;
+    font-size: 12px;
+}
+.PackageName, .PackageVersion {
+    font-size: 1.1vw;
+    margin: 0 0.5em;
+    color: var(--theme-btn-color);
+}
+.PackageName a {
+    color: var(--theme-btn-color);
+}
+.PackageName a:hover {
+    color: var(--theme-btn-color-hv);
+    transition:color .2s;
+}
+.title_tab {
+    width:100%;
+}
+.title_tab td {
+    width:16%;
+}
+.title_tab input {
+    width:100%;
+}
+.noperm {
+    color: #8c1111;
+}
+.perm {
+    color: #0ebb31;
+}
+.center-content {
+    text-align:center;
+}
+.user-tab {
+    content-align: center;
+}

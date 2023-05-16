@@ -4,16 +4,28 @@
     box-sizing: border-box;
 }
 :root {
-    --theme-color: #212529;
-    --theme-bg-color: #767676;
-    --theme-title-color: #fcd649;
-    --theme-top-btm-bar-bg-color: #161616;
-    --theme-top-btm-bar-color: #e8e8e8;
+    --theme-color: #3874e8;
+    --theme-bg-color: #24292f;
+    --theme-title-color: #4987fc;
+    --theme-top-btm-bar-bg-color: #010306;
+    --theme-top-btm-bar-color: #797474;
     --theme-page-title-bg-color: #464646;
+    --theme-page-title-color: #9092a2;
+    --theme-page-title-color-hv: #f8f8f8;
+    --theme-article-bg-color: #464646;
+    --theme-article-color: #cccccc;
+    --theme-article-color-hv: #4987fc;
+    --theme-article-color-sep: #a0a0a0;
     --theme-btn-color: #cccccc;
-    --theme-btn-color-hv: #fcd649;
-    --theme-btn-bg-color: #262626;
-    --theme-btn-bg-color-hv: #363636;
+    --theme-btn-color-hv: #49b9fc;
+    --theme-btn-bg-color: #191c20;
+    --theme-btn-bg-color-hv: #1f4655;
+    --theme-btn-color-danger: #cccccc;
+    --theme-btn-color-hv-danger: #000;
+    --theme-btn-bg-color-danger: #840000;
+    --theme-btn-bg-color-hv-danger: #d94545;
+    --font-family-sans-serif: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 }
 html, body {
     height: 100%;
@@ -27,10 +39,14 @@ h1,h2,h3,h4,h5,h6 {
     font-family: sans-serif;
     text-transform: uppercase;
 }
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
 body {
     display: flex;
     flex-flow: column nowrap;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: start;
     margin: 0;
     font-size: 1rem;
@@ -38,7 +54,7 @@ body {
     color: var(--theme-color);
     text-align: left;
     background-color: var(--theme-bg-color);
-    font-size: 14px;
+    line-height: 1.5;
 }
 h1 {font-size: 27px;}
 h2 {font-size: 25px;}
@@ -104,11 +120,56 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 .button-small {
     width: max-content;
 }
-.button:hover {
+.button-icon {
+    color: var(--theme-btn-color);
+    background-color: var(--theme-btn-bg-color);
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    border-radius: 0.5em;
+    padding: 0.2em 0.2em;
+    border: 0;
+    margin: 0.1em;
+    text-align: center;
+}
+.button:hover, .button-icon:hover {
     background-color: var(--theme-btn-bg-color-hv);
     color: var(--theme-btn-color-hv);
     transition:color .2s;
     transition:background-color .2s;
+}
+.last-button {
+    margin-left:auto;
+}
+.danger {
+    color: var(--theme-btn-color-danger);
+    background-color: var(--theme-btn-bg-color-danger);
+}
+.danger:hover {
+    color: var(--theme-btn-color-hv-danger);
+    background-color: var(--theme-btn-bg-color-hv-danger);
+}
+.centering-row{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-flow: row nowrap;
+    justify-content: center;
+}
+.centering-col{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-flow: column nowrap;
+    justify-content: center;
+}
+.centering-row-left{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-flow: row nowrap;
 }
 
 /* Global content */
@@ -289,9 +350,6 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 /* ============= FOOTER SECTION ============= */
 .footer {
     height: 50px;
-/*    width:100%;
-    position: fixed;
-    bottom:0;*/
     align-content: center;
     align-items: center;
 }
@@ -301,12 +359,13 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     flex-flow: row wrap;
     align-content: center;
     align-items: center;
-    height: 100%;
+    max-height: 100%;
+    margin: 0.1em;
 }
 .footer a:focus,
 .footer a:hover {
     color: var(--theme-btn-color-hv);
 }
-.footer img {
-    height: 100%;
+.footer p a img {
+    max-height: 1rem;
 }

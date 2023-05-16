@@ -1,10 +1,10 @@
 """Fichier main.users.users_view.py les vues users."""
 from django.contrib.auth import login
 from django.contrib.auth.views import PasswordResetView
-from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect, reverse
-from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileForm
+
 from . import settings
+from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileForm
 
 
 def profile(request):
@@ -23,20 +23,19 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         profile_form = ProfileForm(request.POST)
         if form.is_valid() and profile_form.is_valid():
-            print("le formulaire est valide")
             user = form.save()
             profile_form.save()
             login(request, user)
             return redirect(reverse("index"))
         return render(request, "registration/register.html", {
             **settings.base_info,
-            "form": form,
+            "form"        : form,
             "profile_form": profile_form
         })
     else:
         return render(request, "registration/register.html", {
             **settings.base_info,
-            "form": CustomUserCreationForm,
+            "form"        : CustomUserCreationForm,
             "profile_form": ProfileForm
         })
 
@@ -57,7 +56,7 @@ def profile_edit(request):
         profile_form = ProfileForm(instance=request.user.userprofile)
     return render(request, "registration/profile_change.html", {
         **settings.base_info,
-        "form": form,
+        "form"        : form,
         "profile_form": profile_form
     })
 

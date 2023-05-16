@@ -1,1 +1,37 @@
 {% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="Article">
+    <div class="ArticleHeader">
+        {% if perms.pack.view_packageentry %}
+        <h3>Summary</h3>
+        {% else %}
+        <h3>Please Wait</h3>
+        {% endif %}
+    </div>
+    <div class="ArticleContent">
+        {% if perms.pack.view_packageentry %}
+        <table>
+            <tr>
+                <td>Number of different packages:</td>
+                <td>{{ pack_number }}</td>
+            </tr>
+        </table>
+        {% else %}
+        <p>Your request to access the database is currently under examination.</p>
+        <p>Please wait, take a coffee and rest.</p>
+        <p>If you were once able to connect your permissions seems to have been revoked. Contact your administrator.</p>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="Article">
+    <p>Login required...</p>
+    <a class="button" href="{% url 'login' %}">
+        <span class="material-symbols-outlined">login</span>
+        Login
+    </a>
+</div>
+{% endif %}
+{% endblock %}
