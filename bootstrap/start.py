@@ -81,6 +81,7 @@ def check_user_exist():
     global user_info, group_info
     try:
         # check group info and name
+        group_info["id"] = config["pgid"]
         if group_info["id"] in [it.gr_gid for it in grp.getgrall()]:
             # a group with the needed Id already exists -> using its name
             group_info["name"] = str(grp.getgrgid(group_info["id"]).gr_name)
@@ -98,6 +99,7 @@ def check_user_exist():
                 return False
 
         # check user info and name
+        user_info["id"] = config["puid"]
         if user_info["id"] in [it.pw_uid for it in pwd.getpwall()]:
             # a user with the needed id already exists, use its name
             user_info["name"] = str(pwd.getpwuid(user_info["id"]).pw_name)
