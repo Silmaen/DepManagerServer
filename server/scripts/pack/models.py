@@ -101,8 +101,7 @@ def get_namelist(filter: dict):
             continue
         name_list.append((q.name, q.version))
     name_list = list(set(name_list))
-    debugstr += f"   name set : {name_list}<br>\n"
-    return name_list, debugstr
+    return name_list
 
 
 def get_package_detail(name: str, version: str):
@@ -123,11 +122,11 @@ def get_package_detail(name: str, version: str):
 
 
 def get_package_list(filter):
-    names, dbg = get_namelist(filter)
+    names = get_namelist(filter)
     result = []
     for name in names:
         result.append(get_package_detail(name[0], name[1]))
-    return result, dbg
+    return result
 
 
 def get_packages_urls(filter: dict):

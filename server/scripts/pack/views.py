@@ -39,7 +39,7 @@ def packages(request):
         for attr in ["name", "version", "os", "arch", "kind", "compiler"]:
             if attr in temp_filter:
                 ifilter[attr] = temp_filter[attr][0]
-    i_packages, dbgstr = get_package_list(ifilter)
+    i_packages = get_package_list(ifilter)
     return render(request, "package.html",
                   {
                       "title"  : "packages",
@@ -91,6 +91,7 @@ def users(request):
                     "pk"             : entry.pk,
                     "name"           : entry.username,
                     "last_conn"      : entry.last_login,
+                    "admin"          : entry.is_superuser,
                     "can_view_pack"  : entry.has_perm("pack.view_packageentry"),
                     "can_add_pack"   : entry.has_perm("pack.add_packageentry"),
                     "can_delete_pack": entry.has_perm("pack.delete_packageentry"),

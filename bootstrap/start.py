@@ -59,8 +59,8 @@ def check_env():
         print("Warning: DOMAIN_NAME environment variable Must be set to allow POST requests.", file=stderr)
         print("         It can be in the form of real domain name: 'example.com' or an IP.", file=stderr)
         print(
-            "         If you are not using the standard http or https port, don't forget to add it e.g. '127.0.0.1:8080'.",
-            file=stderr)
+                "         If you are not using the standard http or https port, don't forget to add it e.g. '127.0.0.1:8080'.",
+                file=stderr)
     if not result:
         print("Problem in environment...", file=stderr)
         print("======== ENV DUMP ==========", file=stderr)
@@ -260,16 +260,18 @@ def check_admin_user():
         import sqlite3
         con = sqlite3.connect("/data/packages.db")
         cur = con.cursor()
-        res = cur.execute("SELECT * FROM auth_user WHERE is_superuser='true'")
+        res = cur.execute("SELECT * FROM auth_user WHERE is_superuser=1")
         ls_admin = res.fetchall()
         admin_exist = len(ls_admin) > 0
-        if not admin_exist:
+        if admin_exist:
+            print(f"One admin already exists.")
+        else:
             print(f"Create new admin user named {config['admin_name']}.")
             #            exec_cmd(
             #                    f"python3 manage.py createsuperuser --noinput --username {config['admin_name']} --email {config['admin_name']}@{config['domain_name']}")
             cmd = f'python3 manage.py shell -c "from django.contrib.auth import get_user_model; User=get_user_model(); User.objects.create_superuser(\'{config["admin_name"]}\',\'admin@foo.bar\',\'{config["admin_passwd"]}\')"'
             print(f"Executing: '{cmd}'")
-            exec_cmd(cmd)
+            return exec_cmd(cmd)
     except Exception as err:
         print(f"ERROR exception during Server Initialization: {err}.", file=stderr)
         return False

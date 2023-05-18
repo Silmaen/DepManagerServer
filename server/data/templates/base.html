@@ -43,7 +43,7 @@
             <ul class="navmenu">
                 {% if perms.pack.view_packageentry %}
                 <li class="navitem {% if page == 'packages' %}current{% endif %}"><A href="/packages">Packages</A></li>
-                {% if perms.connector.view_userprofile %}
+                {% if perms.auth.view_user %}
                 <li class="navitem {% if page == 'users' %}current{% endif %}"><A href="/users">Users</A></li>
                 {% endif %}
                 {% endif %}
@@ -70,7 +70,8 @@
         {% endif %}
     </p>
     <p>
-         © Designed by Argawaen, all rights reserved. The site design, the logo are trademarks and/or registered trademarks of Argawaen.
+        © Designed by Argawaen, all rights reserved. The site design, the logo are trademarks and/or registered
+        trademarks of Argawaen.
     </p>
     <A href="https://fonts.google.com/icons">
         <span class="material-symbols-outlined">grading</span>
