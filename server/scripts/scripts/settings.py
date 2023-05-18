@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,11 +23,12 @@ SITE_DIR = BASE_DIR.parent
 SECRET_KEY = 'django-insecure-=mnlaqamlk--(f7q19^w(6q0cfx6q&t@_^78r=9cyqwn9ux(t*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ["package.argawaen.net"]
-if DEBUG:
-    ALLOWED_HOSTS += ["127.0.0.1"]
+DEBUG = True
+#
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+if "DOMAIN_NAME" in os.environ:
+    CSRF_TRUSTED_ORIGINS = [f"http://*.{os.environ['DOMAIN_NAME']}", f"https://*.{os.environ['DOMAIN_NAME']}"]
 
 # Application definition
 
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'scripts.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME'  : BASE_DIR / 'db.sqlite3',
+        'NAME'  : "/data/packages.db",
     }
 }
 
@@ -124,7 +125,7 @@ STATICFILES_DIRS = [SITE_DIR / 'data' / 'static']
 
 # Les medias
 MEDIA_URL = "/media/"
-MEDIA_ROOT = SITE_DIR / 'data' / 'media'
+MEDIA_ROOT = '/data'
 
 # Login redirection
 LOGIN_REDIRECT_URL = '/'

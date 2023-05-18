@@ -2,12 +2,11 @@ import subprocess
 from base64 import b64decode
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from connector.models import UserProfile
 from .forms import PackageEntryForm
 from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_namelist
 
@@ -84,19 +83,19 @@ def delete_package(request, pk):
 def users(request):
     if not request.user.is_authenticated:
         return redirect("/")
-    entries = UserProfile.objects.all()
+    entries = User.objects.all()
     p_users = []
     for entry in entries:
         p_users.append(
                 {
                     "pk"             : entry.pk,
-                    "name"           : entry.user.username,
-                    "last_conn"      : entry.user.last_login,
-                    "can_view_pack"  : entry.user.has_perm("pack.view_packageentry"),
-                    "can_add_pack"   : entry.user.has_perm("pack.add_packageentry"),
-                    "can_delete_pack": entry.user.has_perm("pack.delete_packageentry"),
-                    "can_view_user"  : entry.user.has_perm("connector.view_userprofile"),
-                    "can_delete_user": entry.user.has_perm("connector.delete_userprofile"),
+                    "name"           : entry.username,
+                    "last_conn"      : entry.last_login,
+                    "can_view_pack"  : entry.has_perm("pack.view_packageentry"),
+                    "can_add_pack"   : entry.has_perm("pack.add_packageentry"),
+                    "can_delete_pack": entry.has_perm("pack.delete_packageentry"),
+                    "can_view_user"  : entry.has_perm("connector.view_userprofile"),
+                    "can_delete_user": entry.has_perm("connector.delete_userprofile"),
                 }
         )
     return render(request, "users.html",
@@ -115,7 +114,7 @@ def modif_user(request, pk):
     if not request.user.has_perm("connector.delete_userprofile"):
         return redirect("/")
     if request.method == "POST":
-        user = UserProfile.objects.get(pk=pk)
+        user = User.objects.get(pk=pk)
         if 'action' not in request.POST:
             return redirect("users")
         if request.POST['action'] == "delete":

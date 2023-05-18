@@ -1,7 +1,9 @@
 """Fichier main.urls.py définissant les urls."""
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, \
+    PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.urls import path
-from django.contrib.auth.views import *
-from .views import *
+
+from .views import profile, CustomPasswordResetView, register, profile_edit
 
 urlpatterns = [
     path('', profile, name="profile"),

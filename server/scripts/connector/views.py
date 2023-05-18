@@ -4,7 +4,7 @@ from django.contrib.auth.views import PasswordResetView
 from django.shortcuts import render, redirect, reverse
 
 from . import settings
-from .forms import CustomUserCreationForm, CustomUserChangeForm, ProfileForm
+from .forms import CustomUserCreationForm, CustomUserChangeForm
 
 
 def profile(request):
@@ -21,22 +21,18 @@ def register(request):
     """Register new user."""
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
-        profile_form = ProfileForm(request.POST)
-        if form.is_valid() and profile_form.is_valid():
+        if form.is_valid():
             user = form.save()
-            profile_form.save()
             login(request, user)
             return redirect(reverse("index"))
         return render(request, "registration/register.html", {
             **settings.base_info,
-            "form"        : form,
-            "profile_form": profile_form
+            "form": form
         })
     else:
         return render(request, "registration/register.html", {
             **settings.base_info,
-            "form"        : CustomUserCreationForm,
-            "profile_form": ProfileForm
+            "form": CustomUserCreationForm
         })
 
 
@@ -46,18 +42,14 @@ def profile_edit(request):
     """
     if request.method == "POST":
         form = CustomUserChangeForm(request.POST, instance=request.user)
-        profile_form = ProfileForm(request.POST, instance=request.user.userprofile)
-        if form.is_valid() and profile_form.is_valid():
+        if form.is_valid():
             form.save()
-            profile_form.save()
             return redirect(reverse("profile"))
     else:
         form = CustomUserChangeForm(instance=request.user)
-        profile_form = ProfileForm(instance=request.user.userprofile)
     return render(request, "registration/profile_change.html", {
         **settings.base_info,
-        "form"        : form,
-        "profile_form": profile_form
+        "form": form,
     })
 
 
