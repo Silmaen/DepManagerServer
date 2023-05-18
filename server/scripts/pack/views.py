@@ -94,8 +94,8 @@ def users(request):
                     "can_view_pack"  : entry.has_perm("pack.view_packageentry"),
                     "can_add_pack"   : entry.has_perm("pack.add_packageentry"),
                     "can_delete_pack": entry.has_perm("pack.delete_packageentry"),
-                    "can_view_user"  : entry.has_perm("connector.view_userprofile"),
-                    "can_delete_user": entry.has_perm("connector.delete_userprofile"),
+                    "can_view_user"  : entry.has_perm("auth.view_user"),
+                    "can_delete_user": entry.has_perm("auth.delete_user"),
                 }
         )
     return render(request, "users.html",
@@ -111,7 +111,7 @@ def users(request):
 def modif_user(request, pk):
     if not request.user.is_authenticated:
         return redirect("/")
-    if not request.user.has_perm("connector.delete_userprofile"):
+    if not request.user.has_perm("auth.delete_user"):
         return redirect("/")
     if request.method == "POST":
         user = User.objects.get(pk=pk)
@@ -120,39 +120,39 @@ def modif_user(request, pk):
         if request.POST['action'] == "delete":
             user.delete()
         elif request.POST['action'] == "toggle_user_delete":
-            ido = Permission.object.get(codename="delete_userprofile")
-            if user.user.has_perm("connector.delete_userprofile"):
-                user.user.user_permissions.remove(ido)
+            ido = Permission.objects.get(codename="delete_user")
+            if user.has_perm("auth.delete_user"):
+                user.user_permissions.remove(ido)
             else:
-                user.user.user_permissions.add(ido)
+                user.user_permissions.add(ido)
             user.save()
         elif request.POST['action'] == "toggle_user_view":
-            ido = Permission.object.get(codename="view_userprofile")
-            if user.user.has_perm("connector.view_userprofile"):
-                user.user.user_permissions.remove(ido)
+            ido = Permission.objects.get(codename="view_user")
+            if user.has_perm("auth.view_user"):
+                user.user_permissions.remove(ido)
             else:
-                user.user.user_permissions.add(ido)
+                user.user_permissions.add(ido)
             user.save()
         elif request.POST['action'] == "toggle_pack_view":
             ido = Permission.objects.get(codename="view_packageentry")
-            if user.user.has_perm("pack.view_packageentry"):
-                user.user.user_permissions.remove(ido)
+            if user.has_perm("pack.view_packageentry"):
+                user.user_permissions.remove(ido)
             else:
-                user.user.user_permissions.add(ido)
+                user.user_permissions.add(ido)
             user.save()
         elif request.POST['action'] == "toggle_pack_add":
             ido = Permission.objects.get(codename="add_packageentry")
-            if user.user.has_perm("pack.add_packageentry"):
-                user.user.user_permissions.remove(ido)
+            if user.has_perm("pack.add_packageentry"):
+                user.user_permissions.remove(ido)
             else:
-                user.user.user_permissions.add(ido)
+                user.user_permissions.add(ido)
             user.save()
         elif request.POST['action'] == "toggle_pack_delete":
             ido = Permission.objects.get(codename="delete_packageentry")
-            if user.user.has_perm("pack.delete_packageentry"):
-                user.user.user_permissions.remove(ido)
+            if user.has_perm("pack.delete_packageentry"):
+                user.user_permissions.remove(ido)
             else:
-                user.user.user_permissions.add(ido)
+                user.user_permissions.add(ido)
             user.save()
     return redirect("users")
 
