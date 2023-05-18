@@ -3,7 +3,7 @@ set -e
 tag=$(git rev-parse --short HEAD)
 branch=$(git rev-parse --abbrev-ref HEAD)
 registry="registry.argawaen.net"
-image_name="depmanager-server"
+image_name="argawaen/depmanager-server"
 
 echo "Creating image: ${registry}/${image_name}:${tag}"
 
