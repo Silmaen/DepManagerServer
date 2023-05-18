@@ -20,7 +20,7 @@ It is possible to use the server directly in Docker compose:
 version: 3.8
 services:
   depmanager-server:
-    image: registry.argawaen.net/depmanager-server
+    image: registry.argawaen.net/argawaen/depmanager-server
     container_name: depmanager-image
   volume:
     - /srv/data/depman:/data       # Persistent volume for package storage, logs, internal database.
