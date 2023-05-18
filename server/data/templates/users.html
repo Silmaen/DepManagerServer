@@ -16,7 +16,7 @@
         </tr>
         </thead>
         <tbody>
-        {% if perms.connector.delete_userprofile %}
+        {% if perms.auth.delete_user %}
         {% for user in users %}
         <tr>
             <td>{{ user.name }}</td>
