@@ -201,6 +201,8 @@ def api(request):
                 resp = ""
                 for pack in package:
                     pack_u = f"{pack}".replace("/data/", "/media/")
+                    if not pack_u.startswith("/media/"):
+                        pack_u = f"/media/{pack_u}"
                     resp += f"{pack_u}\n"
                 return HttpResponse(resp, status=200)
             if data["action"] == "push":
