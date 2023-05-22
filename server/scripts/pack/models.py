@@ -7,10 +7,10 @@ class PackageEntry(models.Model):
     """
     Package in the list
     """
-    OsType = (('l', 'Linux'), ("w", "Windows"))
-    ArchType = (("x", "x86_64"), ("a", "aarch64"))
+    OsType = (('l', 'Linux'), ("w", "Windows"), ("a", "any"))
+    ArchType = (("x", "x86_64"), ("a", "aarch64"), ("y", "any"))
     KindType = (("r", "shared"), ("t", "static"), ("h", "header"), ("a", "any"))
-    CompilerType = (("g", "gnu-like"), ("m", "msvc-like"))
+    CompilerType = (("g", "gnu-like"), ("m", "msvc-like"), ("a", "any"))
 
     name = models.CharField(
             max_length=60,
