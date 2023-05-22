@@ -200,7 +200,8 @@ def api(request):
                     return HttpResponse(f"""ERROR No matching package.""", status=406)
                 resp = ""
                 for pack in package:
-                    resp += f"{pack.url}\n"
+                    pack_u = f"{pack}".replace("/data/", "/media/")
+                    resp += f"{pack_u}\n"
                 return HttpResponse(resp, status=200)
             if data["action"] == "push":
                 try:
