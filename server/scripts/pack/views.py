@@ -1,5 +1,7 @@
+import shutil
 import subprocess
 from base64 import b64decode
+from pathlib import Path
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Permission, User
@@ -7,6 +9,7 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 
+from scripts.settings import MEDIA_ROOT
 from .forms import PackageEntryForm
 from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_namelist
 
@@ -160,64 +163,90 @@ def modif_user(request, pk):
 
 @csrf_exempt
 def api(request):
-    if not request.user.is_authenticated:
-        if "Authorization" in request.headers:
-            try:
-                key, dec = b64decode(request.headers["Authorization"].split()[-1]).decode("ascii").split(":", 1)
-                user = authenticate(request, username=key, password=dec)
-                if user is None:
-                    return HttpResponseForbidden(f"""Only authenticated user allowed
-Login: {key}, password: {dec} is invalid.""")
-                login(request, user)
-            except Exception as err:
-                return HttpResponseForbidden(f"""Only authenticated user allowed
-Method: {request.method},Headers: {request.headers}
-ERROR: {err}
-""")
+    try:
         if not request.user.is_authenticated:
-            return HttpResponseForbidden(f"""Only authenticated user allowed""")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return HttpResponseForbidden("Please ask the right to see packages")
-    if request.method == "GET":
-        resp = ""
-        entries = PackageEntry.objects.all()
-        for pack in entries:
-            resp += f"{pack.to_dep_entry()}\n"
-        return HttpResponse(resp)
-    if request.method == "POST":
-        data = request.POST.dict()
-        if "action" not in data:
-            return HttpResponse(f"ERROR no asked action.\nPOST: {data}\nheaders: {request.headers}", status=406)
-        if data["action"] not in ["push", "pull"]:
-            return HttpResponse(f"ERROR invalid action.\nPOST: {data}\nheaders: {request.headers}", status=406)
-        if data["action"] == "pull":
-            package = get_packages_urls(data)
-            if len(package) == 0:
-                return HttpResponse(f"""ERROR No matching package.""", status=406)
+            if "Authorization" in request.headers:
+                try:
+                    key, dec = b64decode(request.headers["Authorization"].split()[-1]).decode("ascii").split(":", 1)
+                    user = authenticate(request, username=key, password=dec)
+                    if user is None:
+                        return HttpResponseForbidden(f"""Only authenticated user allowed
+    Login: {key}, password: {dec} is invalid.""")
+                    login(request, user)
+                except Exception as err:
+                    return HttpResponseForbidden(f"""Only authenticated user allowed
+    Method: {request.method},Headers: {request.headers}
+    ERROR: {err}
+    """)
+            if not request.user.is_authenticated:
+                return HttpResponseForbidden(f"""Only authenticated user allowed""")
+        if not request.user.has_perm("pack.view_packageentry"):
+            return HttpResponseForbidden("Please ask the right to see packages")
+        if request.method == "GET":
             resp = ""
-            for pack in package:
-                resp += f"{pack.url}\n"
-            return HttpResponse(resp, status=200)
-        if data["action"] == "push":
-            try:
-                form = PackageEntryForm(request.POST, request.FILES)
-                if form.is_valid():
-                    form.save()
+            entries = PackageEntry.objects.all()
+            for pack in entries:
+                resp += f"{pack.to_dep_entry()}\n"
+            return HttpResponse(resp)
+        if request.method == "POST":
+            data = request.POST.dict()
+            if "action" not in data:
+                return HttpResponse(f"ERROR no asked action.\nPOST: {data}\nheaders: {request.headers}", status=406)
+            if data["action"] not in ["push", "pull"]:
+                return HttpResponse(f"ERROR invalid action.\nPOST: {data}\nheaders: {request.headers}", status=406)
+            if data["action"] == "pull":
+                package = get_packages_urls(data)
+                if len(package) == 0:
+                    return HttpResponse(f"""ERROR No matching package.""", status=406)
+                resp = ""
+                for pack in package:
+                    resp += f"{pack.url}\n"
+                return HttpResponse(resp, status=200)
+            if data["action"] == "push":
+                try:
+                    if len(request.FILES.dict()) > 0:
+                        form = PackageEntryForm(request.POST, request.FILES)
+                        if form.is_valid():
+                            form.save()
+                            return HttpResponse(
+                                    f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                    status=200)
+                        else:
+                            form.full_clean()
+                            return HttpResponse(
+                                    f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                    status=406)
+                    else:
+                        if "package.path" in request.POST:
+                            # temp file to destination folder
+                            origin_path = Path((request.POST["package.path"]))
+                            new_path = Path(MEDIA_ROOT) / "packages" / request.POST["package.name"]
+                            shutil.move(origin_path, new_path)
+                            entry = PackageEntry.objects.create(
+                                    name=request.POST["name"],
+                                    version=request.POST["version"],
+                                    os=request.POST["os"],
+                                    arch=request.POST["arch"],
+                                    kind=request.POST["kind"],
+                                    compiler=request.POST["compiler"],
+                                    package=str(new_path)
+                            )
+                            entry.save()
+                            return HttpResponse(
+                                    f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                    status=200)
+                        return HttpResponse(
+                                f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                status=406)
+                except Exception as excep:
+                    oo = subprocess.run("ls /tmp", shell=True, capture_output=True)
                     return HttpResponse(
-                            f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                            status=200)
-                else:
-                    form.full_clean()
-                    return HttpResponse(
-                            f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                            f"ERROR problem with the data: {excep}.\ntemp: {oo.stdout}\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
                             status=406)
-            except Exception as excep:
-                oo = subprocess.run("ls /tmp", shell=True, capture_output=True)
-                return HttpResponse(
-                        f"ERROR problem with the data: {excep}.\ntemp: {oo.stdout}\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                        status=406)
 
-        return HttpResponse(
-                f'ERROR action {data["action"]} not yet implemented.\nPOST: {data}\nheaders: {request.headers}',
-                status=406)
-    return HttpResponseForbidden()
+            return HttpResponse(
+                    f'ERROR action {data["action"]} not yet implemented.\nPOST: {data}\nheaders: {request.headers}',
+                    status=406)
+        return HttpResponseForbidden()
+    except Exception as err:
+        return HttpResponse(f"""Exception during treatment {err}.""", status=406)
