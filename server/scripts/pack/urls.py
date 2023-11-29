@@ -10,7 +10,7 @@ from .views import *
 urlpatterns = [
                   path("", index, name="index"),
                   path("packages", packages, name="package"),
-                  path("package/<str:name>/<str:version>", detail_package, name="detail_package"),
+                  path("package/<str:name>", detail_package, name="detail_package"),
                   path("package_delete/<int:pk>", delete_package, name="delete_package"),
                   path("users", users, name="users"),
                   path("user/<int:pk>", modif_user, name="modif_user"),

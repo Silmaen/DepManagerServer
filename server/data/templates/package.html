@@ -57,18 +57,23 @@
 <div class="PackageList">
     {% for pack in package %}
     <div class="Package">
-        <div class="PackageHeader">
-            <div class="PackageName"><a href="{% url 'detail_package' pack.name pack.version %}">{{ pack.name }}</a>
+        <button class="PackageHeader collapsible">
+            <div class="PackageName"><a href="{% url 'detail_package' pack.name%}">{{ pack.name }}</a>
             </div>
-            <div class="PackageVersion">{{ pack.version }}</div>
-            <a href="{% url 'detail_package' pack.name pack.version %}" class="button-icon last-button">
+            <a href="{% url 'detail_package' pack.name%}" class="button-icon last-button">
                 <span class="material-symbols-outlined">info</span>
             </a>
-        </div>
-        <div class="PackageFlavors">
-            {% for flavor in pack.combinations %}
-            <div class="PackageFlavor">
-                {{ flavor.os }}, {{ flavor.arch }}, {{ flavor.kind }}, {{ flavor.compiler }}
+        </button>
+        <div class="collapsible_content">
+            {% for version, flavors in pack.versions.items %}
+            <button class="PackageVersion collapsible">{{ version }}</button>
+            <div class="PackageFlavors collapsible_content">
+                {% for flavor in flavors %}
+                <div class="PackageFlavor">
+                    {{ flavor.os }}, {{ flavor.arch }}, {{ flavor.kind }}, {{ flavor.compiler }}
+                    {{ flavor.glibc }} ({{ flavor.build_date }})
+                </div>
+                {% endfor %}
             </div>
             {% endfor %}
         </div>
@@ -76,4 +81,23 @@
     {% endfor %}
 </div>
 {{ debug | safe }}
+{% endblock %}
+
+{% block script_content %}
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("collapsible_activated");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = "100%";
+        }
+      });
+    }
+</script>
 {% endblock %}

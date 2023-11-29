@@ -11,22 +11,23 @@ from django.views.decorators.csrf import csrf_exempt
 
 from scripts.settings import MEDIA_ROOT
 from .forms import PackageEntryForm
-from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_namelist
+from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_entry_count
 
-SiteVersion = "1.0"
-SiteHash = "ae0b3f0"
+root = Path(__file__).resolve().parent.parent.parent
+with open(root / "VERSION") as fp:
+    lines = fp.readlines()
+SiteVersion = lines[0].strip()
+SiteHash = lines[1].strip()
 
 
 # Create your views here.
 
 def index(request):
-    names = get_namelist({})
-
     return render(request, "index.html",
                   {
                       "title"      : "home",
                       "version"    : {"number": SiteVersion, "hash": SiteHash},
-                      "pack_number": len(names),
+                      "pack_number": get_entry_count(),
                   }
                   )
 
@@ -39,7 +40,7 @@ def packages(request):
     ifilter = {}
     if request.method == "POST":
         temp_filter = dict(request.POST)
-        for attr in ["name", "version", "os", "arch", "kind", "compiler"]:
+        for attr in ["name", "version", "glibc", "os", "arch", "kind", "compiler"]:
             if attr in temp_filter:
                 ifilter[attr] = temp_filter[attr][0]
     i_packages = get_package_list(ifilter)
@@ -53,17 +54,17 @@ def packages(request):
                   )
 
 
-def detail_package(request, name, version):
+def detail_package(request, name):
     if not request.user.is_authenticated:
         return redirect("/")
     if not request.user.has_perm("pack.view_packageentry"):
         return redirect("/")
-    package = get_package_detail(name, version)
+    package = get_package_detail(name)
     if package is None:
         return redirect("package")
     return render(request, "package_detail.html",
                   {
-                      "title"  : f"{name} {version}",
+                      "title"  : f"{name}",
                       "page"   : "packages",
                       "version": {"number": SiteVersion, "hash": SiteHash},
                       "package": package
@@ -192,7 +193,7 @@ def api(request):
             data = request.POST.dict()
             if "action" not in data:
                 return HttpResponse(f"ERROR no asked action.\nPOST: {data}\nheaders: {request.headers}", status=406)
-            if data["action"] not in ["push", "pull"]:
+            if data["action"] not in ["push", "pull", "delete"]:
                 return HttpResponse(f"ERROR invalid action.\nPOST: {data}\nheaders: {request.headers}", status=406)
             if data["action"] == "pull":
                 package = get_packages_urls(data)
@@ -219,28 +220,44 @@ def api(request):
                             return HttpResponse(
                                     f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
                                     status=406)
-                    else:
-                        if "package.path" in request.POST:
-                            # temp file to destination folder
-                            origin_path = Path((request.POST["package.path"]))
-                            new_path = Path(MEDIA_ROOT) / "packages" / request.POST["package.name"]
-                            shutil.move(origin_path, new_path)
+                    elif "package.path" in data:
+                        # temp file to destination folder
+                        origin_path = Path((data["package.path"]))
+                        new_path = Path(MEDIA_ROOT) / "packages" / request.POST["package.name"]
+                        shutil.move(origin_path, new_path)
+                        if "build_date" in data:
                             entry = PackageEntry.objects.create(
-                                    name=request.POST["name"],
-                                    version=request.POST["version"],
-                                    os=request.POST["os"],
-                                    arch=request.POST["arch"],
-                                    kind=request.POST["kind"],
-                                    compiler=request.POST["compiler"],
+                                    name=data["name"],
+                                    version=data["version"],
+                                    os=data["os"],
+                                    arch=data["arch"],
+                                    kind=data["kind"],
+                                    compiler=data["compiler"],
+                                    glibc=data["glibc"],
+                                    build_date=data["build_date"],
                                     package=str(new_path)
                             )
                             entry.save()
                             return HttpResponse(
                                     f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
                                     status=200)
-                        return HttpResponse(
-                                f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                                status=406)
+                        else:
+                            entry = PackageEntry.objects.create(
+                                    name=data["name"],
+                                    version=data["version"],
+                                    os=data["os"],
+                                    arch=data["arch"],
+                                    kind=data["kind"],
+                                    compiler=data["compiler"],
+                                    package=str(new_path)
+                            )
+                            entry.save()
+                            return HttpResponse(
+                                    f"WARNING old FORMAT.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                    status=201)
+                    return HttpResponse(
+                            f"INVALID REQUEST.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                            status=406)
                 except Exception as excep:
                     oo = subprocess.run("ls /tmp", shell=True, capture_output=True)
                     return HttpResponse(

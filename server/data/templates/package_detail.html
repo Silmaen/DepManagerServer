@@ -2,25 +2,57 @@
 
 {% block content %}
 <div class="ArticleContent user_form">
-    <h2>{{ package.name }} {{ package.version }}</h2>
+    <h2>{{ package.name }}</h2>
     <a href="{% url 'package' %}" class="button"><span class="material-symbols-outlined">undo</span></a>
 </div>
-    <table class="PackageList">
-    {% for flavor in package.combinations %}
-        <tr class="PackageDetail">
-            <td>{{ flavor.os }}</td>
-            <td>{{ flavor.arch }}</td>
-            <td>{{ flavor.kind }}</td>
-            <td>{{ flavor.compiler }}</td>
-            <td>{{ flavor.package.size }}</td>
-            {% if perms.pack.delete_packageentry %}
-            <td><form method="post" action="{% url 'delete_package' flavor.pk %}">
-                {% csrf_token %}
-                <button type="submit" class="button-icon danger"><span class="material-symbols-outlined">delete</span></button>
-            </form></td>
-            {% endif %}
-        </tr>
+<div class="PackageList user_form">
+    {% for version, flavors in package.versions.items %}
+    <div class="Package">
+        <button class="PackageName collapsible">{{ version }}</button>
+        <div class="collapsible_content PackageList">
+            {% for flavor in flavors %}
+            <div class="PackageDetail">
+                <div class="PackageDetail2">
+                    <div>{{ flavor.os }}</div>
+                    <div>{{ flavor.arch }}</div>
+                    <div>{{ flavor.kind }}</div>
+                    <div>{{ flavor.compiler }}</div>
+                    <div>{{ flavor.glibc }}</div>
+                    <div>{{ flavor.build_date }}</div>
+                    <div>{{ flavor.package.size }}</div>
+                </div>
+                {% if perms.pack.delete_packageentry %}
+                <div>
+                    <form method="post" action="{% url 'delete_package' flavor.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button-icon danger"><span
+                                class="material-symbols-outlined">delete</span></button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
     {% endfor %}
-    </table>
 </div>
+{% endblock %}
+
+{% block script_content %}
+<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("collapsible_activated");
+        var content = this.nextElementSibling;
+        if (content.style.maxHeight){
+          content.style.maxHeight = null;
+        } else {
+          content.style.maxHeight = "100%";
+        }
+      });
+    }
+</script>
 {% endblock %}
