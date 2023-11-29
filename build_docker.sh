@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
 set -e
-tag=$(git rev-parse --short HEAD)
+version=$(cat VERSION)
+if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then
+  version="${version}-dev"
+fi
+rev=$(git rev-parse --short HEAD)
+echo ${version} > server/VERSION
+echo ${rev} >> server/VERSION
 branch=$(git rev-parse --abbrev-ref HEAD)
 registry="registry.argawaen.net"
 image_name="argawaen/depmanager-server"
+tag="${version}-${rev}"
 
 echo "Creating image: ${registry}/${image_name}:${tag}"
 

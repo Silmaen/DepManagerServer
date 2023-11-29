@@ -16,6 +16,9 @@
     --theme-article-color: #cccccc;
     --theme-article-color-hv: #4987fc;
     --theme-article-color-sep: #a0a0a0;
+    --theme-package-color-bg-fold: #464646;
+    --theme-package-color-bg-active: #353535;
+    --theme-package-color-bg-hv: #4987fc;
     --theme-btn-color: #cccccc;
     --theme-btn-color-hv: #49b9fc;
     --theme-btn-bg-color: #191c20;
