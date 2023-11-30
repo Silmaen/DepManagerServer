@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 version=$(cat VERSION)
-if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [[ "${branch}" != "main" ]]; then
   version="${version}-dev"
 fi
 rev=$(git rev-parse --short HEAD)
 echo ${version} > server/VERSION
 echo ${rev} >> server/VERSION
-branch=$(git rev-parse --abbrev-ref HEAD)
 registry="registry.argawaen.net"
 image_name="argawaen/depmanager-server"
 tag="${version}-${rev}"
