@@ -1,0 +1,5 @@
+* text=auto
+#  Some special file that are unsed under linux and should be kept with unix end of line
+CMakelists.txt text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
