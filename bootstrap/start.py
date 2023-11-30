@@ -10,6 +10,7 @@ from sys import stderr
 server_path = Path("/server")
 server_config = server_path / "config"
 server_data = Path("/data")
+packages_dir = server_data / "packages"
 server_data_upload = server_data / "_upload"
 server_scripts = server_path / "scripts"
 server_log = server_data / "log"
@@ -131,7 +132,7 @@ def correct_permission():
     import grp
     import os
     try:
-        folder_list = [server_config, server_scripts, server_data, server_log]
+        folder_list = [server_config, server_scripts, server_data, server_log, packages_dir]
         for i in range(10):
             folder_list.append(server_data_upload / str(i))
         # check permission

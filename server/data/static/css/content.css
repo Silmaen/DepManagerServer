@@ -53,6 +53,10 @@
 .user_form {
     align-items: center;
 }
+.user_form::before, .user_form::after {
+    align-items: center;
+    left: 0;
+}
 .PackageList{
     display: flex;
     flex-direction: column;
@@ -83,6 +87,13 @@
     border: 1px solid var(--theme-article-color-sep);
     border-radius:0.5em;
 }
+.PackageDetail2{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 .PackageHeader {
     display: flex;
     flex-flow: row nowrap;
@@ -91,12 +102,15 @@
     display: flex;
     flex-flow: column nowrap;
     padding-left: 3em;
-    font-size: 12px;
+    font-size: 0.8vw;
 }
 .PackageName, .PackageVersion {
-    font-size: 1.1vw;
+    font-size: 1.3vw;
     margin: 0 0.5em;
     color: var(--theme-btn-color);
+}
+.PackageVersion {
+    font-size: 0.9vw;
 }
 .PackageName a {
     color: var(--theme-btn-color);
@@ -125,4 +139,46 @@
 }
 .user-tab {
     content-align: center;
+}
+/* --- Collapsible content --- */
+.collapsible {
+  background-color: var(--theme-package-color-bg-fold);
+  color: var(--theme-btn-color);
+  cursor: pointer;
+  padding: 0.3em;
+  margin: 0.1em;
+  border: none;
+  border-radius:0.5em;
+  text-align: left;
+  outline: none;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.collapsible:hover {
+  background-color: var(--theme-package-color-bg-hv);
+}
+.collapsible_activated {
+  background-color: var(--theme-package-color-bg-active);
+}
+
+.collapsible:before {
+  content: '\2303';
+  color: var(--theme-btn-color);
+  font-weight: bold;
+  float: left;
+  margin-right: 5px;
+}
+
+.collapsible_activated:before {
+  content: "\2304";
+}
+
+.collapsible_content {
+  width: 100%;
+  padding: 0 0.5em;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s;
+  transition: height 0.2s;
 }
