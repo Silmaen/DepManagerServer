@@ -25,6 +25,11 @@ class PackageEntry(models.Model):
             choices=OsType,
             verbose_name="Package's Operating System."
     )
+    glibc = models.CharField(
+            max_length=25,
+            default="",
+            verbose_name="Package's glibc Version if applicable."
+    )
     arch = models.CharField(
             max_length=1,
             choices=ArchType,
@@ -40,9 +45,12 @@ class PackageEntry(models.Model):
             choices=CompilerType,
             verbose_name="Package's compiler type."
     )
+    build_date = models.DateTimeField(
+            default=timezone.now,
+            verbose_name="Date of Build")
     date = models.DateTimeField(
             default=timezone.now,
-            verbose_name="Date of Creation")
+            verbose_name="Date of Upload")
     package = models.FileField(
             upload_to='packages',
             verbose_name="Package file")
@@ -67,7 +75,7 @@ class PackageEntry(models.Model):
     def match(self, match_to):
         from fnmatch import translate
         from re import compile
-        for attr in ["name", "version", "os", "arch", "kind", "compiler"]:
+        for attr in ["name", "version", "os", "arch", "kind", "compiler", "glibc"]:
             if attr == "kind" and (match_to[attr] == "any" or getattr(self, attr) == "any"):
                 continue
             if not compile(translate(match_to[attr])).match(getattr(self, attr)):
@@ -75,7 +83,18 @@ class PackageEntry(models.Model):
         return True
 
     def to_dep_entry(self):
-        return f"  {self.name}/{self.version} [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}]"
+        if self.glibc == "":
+            return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}]"
+        return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}, {self.glibc}]"
+
+
+def get_entry_count():
+    query = PackageEntry.objects.all()
+    name_list = []
+    for q in query:
+        name_list.append(q.name)
+    name_list = list(set(name_list))
+    return len(name_list)
 
 
 def get_namelist(filter: dict):
@@ -85,47 +104,68 @@ def get_namelist(filter: dict):
         "os"      : "*",
         "arch"    : "*",
         "kind"    : "*",
-        "compiler": "*"
+        "compiler": "*",
+        "glibc"   : "*"
     }
 
     for key in true_filter.keys():
         if key in filter:
             if filter[key] not in [None, "", "any"]:
                 true_filter[key] = filter[key]
-    debugstr = f"   filter   : {filter} <br>\n"
-    debugstr += f" true filter: {true_filter} <br>\n"
     query = PackageEntry.objects.all()
     name_list = []
     for q in query:
         if not q.match(true_filter):
             continue
-        name_list.append((q.name, q.version))
+        name_list.append(q.name)
     name_list = list(set(name_list))
+    name_list.sort()
     return name_list
 
 
-def get_package_detail(name: str, version: str):
-    it = {"name"        : name,
-          "version"     : version,
-          "combinations": []}
-    query = PackageEntry.objects.filter(name=name, version=version)
+def sort_a(infos):
+    from copy import deepcopy
+    def safe_int(val):
+        try:
+            return int(val)
+        except:
+            return val
+
+    skey = sorted(infos["versions"].keys(), key=lambda vers: [safe_int(i) for i in vers.split(".")], reverse=True)
+    s_infos = deepcopy(infos)
+    s_infos["versions"] = {}
+    for key in skey:
+        s_infos["versions"][key] = sorted(infos["versions"][key], key=lambda flavor: flavor["build_date"], reverse=True)
+    return s_infos
+
+
+def get_package_detail(name: str):
+    it = {"name"    : name,
+          "versions": {},
+          }
+    query = PackageEntry.objects.filter(name=name)
     for q in query:
-        it["combinations"].append({
-            "os"      : q.get_os_display(),
-            "arch"    : q.get_arch_display(),
-            "kind"    : q.get_kind_display(),
-            "compiler": q.get_compiler_display(),
-            "package" : q.package,
-            "pk"      : q.pk
-        })
-    return it
+        combination = {
+            "os"        : q.get_os_display(),
+            "arch"      : q.get_arch_display(),
+            "kind"      : q.get_kind_display(),
+            "compiler"  : q.get_compiler_display(),
+            "glibc"     : q.glibc,
+            "build_date": q.build_date,
+            "package"   : q.package,
+            "pk"        : q.pk
+        }
+        if q.version not in it["versions"].keys():
+            it["versions"][q.version] = []
+        it["versions"][q.version].append(combination)
+    return sort_a(it)
 
 
 def get_package_list(filter):
     names = get_namelist(filter)
     result = []
     for name in names:
-        result.append(get_package_detail(name[0], name[1]))
+        result.append(get_package_detail(name))
     return result
 
 
@@ -136,7 +176,8 @@ def get_packages_urls(filter: dict):
         "os"      : "*",
         "arch"    : "*",
         "kind"    : "*",
-        "compiler": "*"
+        "compiler": "*",
+        "glibc"   : "*"
     }
     for key in true_filter.keys():
         if key in filter:
