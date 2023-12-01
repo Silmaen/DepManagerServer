@@ -1,3 +1,4 @@
+/* Pag de passwords */
 .Article {
     display: flex;
     flex-flow: column nowrap;
@@ -50,6 +51,8 @@
     justify-content: space-between;
 }
 
+/* Page de packages */
+
 .user_form {
     align-items: center;
 }
@@ -57,6 +60,7 @@
     align-items: center;
     left: 0;
 }
+
 .PackageList{
     display: flex;
     flex-direction: column;
@@ -67,15 +71,34 @@
         width: 100%;
     }
 }
+
 .Package{
     display: flex;
     flex-direction: column;
     width: 100%;
     margin-top:1em;
-    padding: 0.5em;
+    margin-bottom: 1em;
+    color: var(--theme-btn-color);
     border: 1px solid var(--theme-article-color-sep);
     border-radius:0.5em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
 }
+.PackageHeader {
+    padding: 0.5em;
+    font-size: 1.3vw;
+    display: flex;
+    flex-flow: row nowrap;
+    transition: background-color 0.3s;
+    background-color: var(--theme-package-color-bg-fold);
+}
+.PackageHeader:hover, .PackageHeader.open:hover{
+    background-color: var(--theme-package-color-bg-hv);
+}
+.PackageHeader.open {
+    background-color: var(--theme-package-color-bg-active);
+}
+
 .PackageDetail{
     display: flex;
     flex-flow: row nowrap;
@@ -94,16 +117,13 @@
     align-items: center;
     width: 100%;
 }
-.PackageHeader {
-    display: flex;
-    flex-flow: row nowrap;
-}
 .PackageFlavors {
     display: flex;
     flex-flow: column nowrap;
     padding-left: 3em;
     font-size: 0.8vw;
 }
+
 .PackageName, .PackageVersion {
     font-size: 1.3vw;
     margin: 0 0.5em;
@@ -112,13 +132,10 @@
 .PackageVersion {
     font-size: 0.9vw;
 }
-.PackageName a {
-    color: var(--theme-btn-color);
-}
-.PackageName a:hover {
-    color: var(--theme-btn-color-hv);
-    transition:color .2s;
-}
+
+
+
+
 .title_tab {
     width:100%;
 }
@@ -139,46 +156,4 @@
 }
 .user-tab {
     content-align: center;
-}
-/* --- Collapsible content --- */
-.collapsible {
-  background-color: var(--theme-package-color-bg-fold);
-  color: var(--theme-btn-color);
-  cursor: pointer;
-  padding: 0.3em;
-  margin: 0.1em;
-  border: none;
-  border-radius:0.5em;
-  text-align: left;
-  outline: none;
-  width: 100%;
-  transition: background-color 0.2s;
-}
-
-.collapsible:hover {
-  background-color: var(--theme-package-color-bg-hv);
-}
-.collapsible_activated {
-  background-color: var(--theme-package-color-bg-active);
-}
-
-.collapsible:before {
-  content: '\2303';
-  color: var(--theme-btn-color);
-  font-weight: bold;
-  float: left;
-  margin-right: 5px;
-}
-
-.collapsible_activated:before {
-  content: "\2304";
-}
-
-.collapsible_content {
-  width: 100%;
-  padding: 0 0.5em;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s;
-  transition: height 0.2s;
 }

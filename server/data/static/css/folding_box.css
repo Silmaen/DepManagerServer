@@ -1,0 +1,36 @@
+.folding_box {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.folding_box_header {
+    cursor: pointer;
+}
+.folding_box_header::before {
+    content: "\25BC"; /* Unicode pour la flèche vers le bas */
+    display: inline-block;
+    margin-right: 0.1em;
+    margin-left: 0.1em;
+    transition: transform 0.3s;
+}
+.folding_box_header.open::before {
+    transform: rotate(180deg);
+}
+
+.folding_box_header:hover {
+}
+
+.folding_box_content {
+    overflow: hidden;
+    padding: 0px;
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s;
+    max-height: 0;
+    opacity: 0;
+}
+
+.folding_box_content.open {
+    max-height: 10000px;
+    opacity: 1;
+    padding: 10px;
+}

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from django.db import models
 from django.utils import timezone
 
@@ -13,47 +15,47 @@ class PackageEntry(models.Model):
     CompilerType = (("g", "gnu-like"), ("m", "msvc-like"), ("a", "any"))
 
     name = models.CharField(
-            max_length=60,
-            verbose_name="Package's Name."
+        max_length=60,
+        verbose_name="Package's Name."
     )
     version = models.CharField(
-            max_length=25,
-            verbose_name="Package's Version."
+        max_length=25,
+        verbose_name="Package's Version."
     )
     os = models.CharField(
-            max_length=1,
-            choices=OsType,
-            verbose_name="Package's Operating System."
+        max_length=1,
+        choices=OsType,
+        verbose_name="Package's Operating System."
     )
     glibc = models.CharField(
-            max_length=25,
-            default="",
-            verbose_name="Package's glibc Version if applicable."
+        max_length=25,
+        default="",
+        verbose_name="Package's glibc Version if applicable."
     )
     arch = models.CharField(
-            max_length=1,
-            choices=ArchType,
-            verbose_name="Package's CPU Architecture."
+        max_length=1,
+        choices=ArchType,
+        verbose_name="Package's CPU Architecture."
     )
     kind = models.CharField(
-            max_length=1,
-            choices=KindType,
-            verbose_name="Package's kind."
+        max_length=1,
+        choices=KindType,
+        verbose_name="Package's kind."
     )
     compiler = models.CharField(
-            max_length=1,
-            choices=CompilerType,
-            verbose_name="Package's compiler type."
+        max_length=1,
+        choices=CompilerType,
+        verbose_name="Package's compiler type."
     )
     build_date = models.DateTimeField(
-            default=timezone.now,
-            verbose_name="Date of Build")
+        default=timezone.now,
+        verbose_name="Date of Build")
     date = models.DateTimeField(
-            default=timezone.now,
-            verbose_name="Date of Upload")
+        default=timezone.now,
+        verbose_name="Date of Upload")
     package = models.FileField(
-            upload_to='packages',
-            verbose_name="Package file")
+        upload_to='packages',
+        verbose_name="Package file")
 
     class Meta:
         """
@@ -69,7 +71,8 @@ class PackageEntry(models.Model):
         super(PackageEntry, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self.package.delete()
+        if Path(self.package.path).exists():
+            self.package.delete()
         super(PackageEntry, self).delete(*args, **kwargs)
 
     def match(self, match_to):
@@ -87,6 +90,16 @@ class PackageEntry(models.Model):
             return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}]"
         return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}, {self.glibc}]"
 
+    def get_pretty_size_display(self):
+        if not Path(self.package.path).exists():
+            return f"(void)"
+        raw_size = Path(self.package.path).stat().st_size
+        for unite in ['', 'K', 'M', 'G', 'T']:
+            if raw_size < 1024.0:
+                break
+            raw_size /= 1024.0
+        return f"{raw_size:.2f} {unite}"
+
 
 def get_entry_count():
     query = PackageEntry.objects.all()
@@ -99,13 +112,13 @@ def get_entry_count():
 
 def get_namelist(filter: dict):
     true_filter = {
-        "name"    : "*",
-        "version" : "*",
-        "os"      : "*",
-        "arch"    : "*",
-        "kind"    : "*",
+        "name": "*",
+        "version": "*",
+        "os": "*",
+        "arch": "*",
+        "kind": "*",
         "compiler": "*",
-        "glibc"   : "*"
+        "glibc": "*"
     }
 
     for key in true_filter.keys():
@@ -140,20 +153,21 @@ def sort_a(infos):
 
 
 def get_package_detail(name: str):
-    it = {"name"    : name,
+    it = {"name": name,
           "versions": {},
           }
     query = PackageEntry.objects.filter(name=name)
     for q in query:
         combination = {
-            "os"        : q.get_os_display(),
-            "arch"      : q.get_arch_display(),
-            "kind"      : q.get_kind_display(),
-            "compiler"  : q.get_compiler_display(),
-            "glibc"     : q.glibc,
+            "os": q.get_os_display(),
+            "arch": q.get_arch_display(),
+            "kind": q.get_kind_display(),
+            "compiler": q.get_compiler_display(),
+            "glibc": q.glibc,
             "build_date": q.build_date,
-            "package"   : q.package,
-            "pk"        : q.pk
+            "package": q.package,
+            "package_size": q.get_pretty_size_display(),
+            "pk": q.pk
         }
         if q.version not in it["versions"].keys():
             it["versions"][q.version] = []
@@ -171,13 +185,13 @@ def get_package_list(filter):
 
 def get_packages_urls(filter: dict):
     true_filter = {
-        "name"    : "*",
-        "version" : "*",
-        "os"      : "*",
-        "arch"    : "*",
-        "kind"    : "*",
+        "name": "*",
+        "version": "*",
+        "os": "*",
+        "arch": "*",
+        "kind": "*",
         "compiler": "*",
-        "glibc"   : "*"
+        "glibc": "*"
     }
     for key in true_filter.keys():
         if key in filter:
@@ -190,3 +204,27 @@ def get_packages_urls(filter: dict):
             continue
         url_list.append(q.package)
     return url_list
+
+
+def delete_packages(filter: dict):
+    true_filter = {
+        "name": "*",
+        "version": "*",
+        "os": "*",
+        "arch": "*",
+        "kind": "*",
+        "compiler": "*",
+        "glibc": "*"
+    }
+    for key in true_filter.keys():
+        if key in filter:
+            if filter[key] not in [None, "", "any"]:
+                true_filter[key] = filter[key]
+    query = PackageEntry.objects.all()
+    count = 0
+    for q in query:
+        if not q.match(true_filter):
+            continue
+        count += 1
+        q.delete()
+    return count
