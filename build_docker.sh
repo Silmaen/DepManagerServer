@@ -2,7 +2,7 @@
 set -e
 version=$(cat VERSION)
 branch=$(git rev-parse --abbrev-ref HEAD)
-if [[ "${branch}" != "main" ]]; then
+if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then
   version="${version}-dev"
 fi
 rev=$(git rev-parse --short HEAD)
@@ -14,7 +14,7 @@ tag="${version}-${rev}"
 
 echo "Creating image: ${registry}/${image_name}:${tag}"
 
-docker build -t ${registry}/${image_name}:${tag} .
+docker build --progress=plain -t ${registry}/${image_name}:${tag} .
 
 if [[ "${branch}" == "main" && "$(git status -s)" == "" ]]; then
   echo "Branch is 'main'-pure, tag it to 'latest'."
