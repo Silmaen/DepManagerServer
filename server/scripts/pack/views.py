@@ -11,7 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from scripts.settings import MEDIA_ROOT
 from .forms import PackageEntryForm
-from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_entry_count
+from .models import get_package_list, get_package_detail, PackageEntry, get_packages_urls, get_entry_count, \
+    delete_packages
 
 root = Path(__file__).resolve().parent.parent.parent
 with open(root / "VERSION") as fp:
@@ -25,8 +26,8 @@ SiteHash = lines[1].strip()
 def index(request):
     return render(request, "index.html",
                   {
-                      "title"      : "home",
-                      "version"    : {"number": SiteVersion, "hash": SiteHash},
+                      "title": "home",
+                      "version": {"number": SiteVersion, "hash": SiteHash},
                       "pack_number": get_entry_count(),
                   }
                   )
@@ -46,8 +47,8 @@ def packages(request):
     i_packages = get_package_list(ifilter)
     return render(request, "package.html",
                   {
-                      "title"  : "packages",
-                      "page"   : "packages",
+                      "title": "packages",
+                      "page": "packages",
                       "version": {"number": SiteVersion, "hash": SiteHash},
                       "package": i_packages
                   }
@@ -64,8 +65,8 @@ def detail_package(request, name):
         return redirect("package")
     return render(request, "package_detail.html",
                   {
-                      "title"  : f"{name}",
-                      "page"   : "packages",
+                      "title": f"{name}",
+                      "page": "packages",
                       "version": {"number": SiteVersion, "hash": SiteHash},
                       "package": package
                   })
@@ -91,24 +92,24 @@ def users(request):
     p_users = []
     for entry in entries:
         p_users.append(
-                {
-                    "pk"             : entry.pk,
-                    "name"           : entry.username,
-                    "last_conn"      : entry.last_login,
-                    "admin"          : entry.is_superuser,
-                    "can_view_pack"  : entry.has_perm("pack.view_packageentry"),
-                    "can_add_pack"   : entry.has_perm("pack.add_packageentry"),
-                    "can_delete_pack": entry.has_perm("pack.delete_packageentry"),
-                    "can_view_user"  : entry.has_perm("auth.view_user"),
-                    "can_delete_user": entry.has_perm("auth.delete_user"),
-                }
+            {
+                "pk": entry.pk,
+                "name": entry.username,
+                "last_conn": entry.last_login,
+                "admin": entry.is_superuser,
+                "can_view_pack": entry.has_perm("pack.view_packageentry"),
+                "can_add_pack": entry.has_perm("pack.add_packageentry"),
+                "can_delete_pack": entry.has_perm("pack.delete_packageentry"),
+                "can_view_user": entry.has_perm("auth.view_user"),
+                "can_delete_user": entry.has_perm("auth.delete_user"),
+            }
         )
     return render(request, "users.html",
                   {
-                      "title"  : "users",
-                      "page"   : "users",
+                      "title": "users",
+                      "page": "users",
                       "version": {"number": SiteVersion, "hash": SiteHash},
-                      "users"  : p_users
+                      "users": p_users
                   }
                   )
 
@@ -193,7 +194,7 @@ def api(request):
             data = request.POST.dict()
             if "action" not in data:
                 return HttpResponse(f"ERROR no asked action.\nPOST: {data}\nheaders: {request.headers}", status=406)
-            if data["action"] not in ["push", "pull", "delete"]:
+            if data["action"] not in ["push", "pull", "delete", "version"]:
                 return HttpResponse(f"ERROR invalid action.\nPOST: {data}\nheaders: {request.headers}", status=406)
             if data["action"] == "pull":
                 package = get_packages_urls(data)
@@ -206,20 +207,20 @@ def api(request):
                         pack_u = f"/media/{pack_u}"
                     resp += f"{pack_u}\n"
                 return HttpResponse(resp, status=200)
-            if data["action"] == "push":
+            elif data["action"] == "push":
                 try:
                     if len(request.FILES.dict()) > 0:
                         form = PackageEntryForm(request.POST, request.FILES)
                         if form.is_valid():
                             form.save()
                             return HttpResponse(
-                                    f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                                    status=200)
+                                f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                status=200)
                         else:
                             form.full_clean()
                             return HttpResponse(
-                                    f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                                    status=406)
+                                f"INVALID FORM.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                status=406)
                     elif "package.path" in data:
                         # temp file to destination folder
                         origin_path = Path((data["package.path"]))
@@ -227,46 +228,55 @@ def api(request):
                         shutil.move(origin_path, new_path)
                         if "build_date" in data:
                             entry = PackageEntry.objects.create(
-                                    name=data["name"],
-                                    version=data["version"],
-                                    os=data["os"],
-                                    arch=data["arch"],
-                                    kind=data["kind"],
-                                    compiler=data["compiler"],
-                                    glibc=data["glibc"],
-                                    build_date=data["build_date"],
-                                    package=str(new_path)
+                                name=data["name"],
+                                version=data["version"],
+                                os=data["os"],
+                                arch=data["arch"],
+                                kind=data["kind"],
+                                compiler=data["compiler"],
+                                glibc=data["glibc"],
+                                build_date=data["build_date"],
+                                package=str(new_path)
                             )
                             entry.save()
                             return HttpResponse(
-                                    f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                                    status=200)
+                                f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                status=200)
                         else:
                             entry = PackageEntry.objects.create(
-                                    name=data["name"],
-                                    version=data["version"],
-                                    os=data["os"],
-                                    arch=data["arch"],
-                                    kind=data["kind"],
-                                    compiler=data["compiler"],
-                                    package=str(new_path)
+                                name=data["name"],
+                                version=data["version"],
+                                os=data["os"],
+                                arch=data["arch"],
+                                kind=data["kind"],
+                                compiler=data["compiler"],
+                                package=str(new_path)
                             )
                             entry.save()
                             return HttpResponse(
-                                    f"WARNING old FORMAT.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                                    status=201)
+                                f"WARNING old FORMAT.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                status=201)
                     return HttpResponse(
-                            f"INVALID REQUEST.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                            status=406)
+                        f"INVALID REQUEST.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                        status=406)
                 except Exception as excep:
                     oo = subprocess.run("ls /tmp", shell=True, capture_output=True)
                     return HttpResponse(
-                            f"ERROR problem with the data: {excep}.\ntemp: {oo.stdout}\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
-                            status=406)
-
+                        f"ERROR problem with the data: {excep}.\ntemp: {oo.stdout}\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                        status=406)
+            elif data["action"] == "delete":
+                package = get_packages_urls(data)
+                if len(package) == 0:
+                    return HttpResponse(f"""ERROR No matching package.""", status=406)
+                if len(package) > 1:
+                    return HttpResponse(f"""ERROR more than one package match the query.""", status=406)
+                delete_packages(data)
+                return HttpResponse(f"Entry deleted", status=200)
+            elif data["action"] == "version":
+                return HttpResponse(f"version: {SiteVersion}\n", status=200)
             return HttpResponse(
-                    f'ERROR action {data["action"]} not yet implemented.\nPOST: {data}\nheaders: {request.headers}',
-                    status=406)
+                f'ERROR action {data["action"]} not yet implemented.\nPOST: {data}\nheaders: {request.headers}',
+                status=406)
         return HttpResponseForbidden()
     except Exception as err:
         return HttpResponse(f"""Exception during treatment {err}.""", status=406)

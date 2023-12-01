@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/folding_box.css' %}"/>
+{% endblock %}
 
 {% block content %}
 <div class="ArticleContent user_form">
@@ -7,9 +12,9 @@
 </div>
 <div class="PackageList user_form">
     {% for version, flavors in package.versions.items %}
-    <div class="Package">
-        <button class="PackageName collapsible">{{ version }}</button>
-        <div class="collapsible_content PackageList">
+    <div class="Package" id="{{ version }}">
+        <div class="PackageName folding_box_header" onclick="toggleContent('{{ version }}')">{{ version }}</div>
+        <div class="PackageFlavors folding_box_content">
             {% for flavor in flavors %}
             <div class="PackageDetail">
                 <div class="PackageDetail2">
@@ -19,7 +24,7 @@
                     <div>{{ flavor.compiler }}</div>
                     <div>{{ flavor.glibc }}</div>
                     <div>{{ flavor.build_date }}</div>
-                    <div>{{ flavor.package.size }}</div>
+                    <div>{{ flavor.package_size }}</div>
                 </div>
                 {% if perms.pack.delete_packageentry %}
                 <div>
@@ -39,20 +44,5 @@
 {% endblock %}
 
 {% block script_content %}
-<script>
-    var coll = document.getElementsByClassName("collapsible");
-    var i;
-
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("collapsible_activated");
-        var content = this.nextElementSibling;
-        if (content.style.maxHeight){
-          content.style.maxHeight = null;
-        } else {
-          content.style.maxHeight = "100%";
-        }
-      });
-    }
-</script>
+<script src="{% static 'js/folding_box.js' %}"></script>
 {% endblock %}
