@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/folding_box.css' %}"/>
+{% endblock %}
 
 {% block content %}
 <div class="ArticleContent">
@@ -56,24 +61,27 @@
 </div>
 <div class="PackageList">
     {% for pack in package %}
-    <div class="Package">
-        <button class="PackageHeader collapsible">
-            <div class="PackageName"><a href="{% url 'detail_package' pack.name%}">{{ pack.name }}</a>
-            </div>
+    <div class="Package folding_box" id="{{ pack.name }}">
+        <div class="PackageHeader folding_box_header" onclick="toggleContent('{{ pack.name }}')">
+            <div class="PackageName">{{ pack.name }}</div>
             <a href="{% url 'detail_package' pack.name%}" class="button-icon last-button">
                 <span class="material-symbols-outlined">info</span>
             </a>
-        </button>
-        <div class="collapsible_content">
+        </div>
+        <div class="folding_box_content">
             {% for version, flavors in pack.versions.items %}
-            <button class="PackageVersion collapsible">{{ version }}</button>
-            <div class="PackageFlavors collapsible_content">
-                {% for flavor in flavors %}
-                <div class="PackageFlavor">
-                    {{ flavor.os }}, {{ flavor.arch }}, {{ flavor.kind }}, {{ flavor.compiler }}
-                    {{ flavor.glibc }} ({{ flavor.build_date }})
+            <div class="Package folding_box" id="{{ pack.name }}_{{ version }}">
+                <div class="PackageVersion folding_box_header" onclick="toggleContent('{{ pack.name }}_{{ version }}')">
+                    {{ version }}
                 </div>
-                {% endfor %}
+                <div class="PackageFlavors folding_box_content">
+                    {% for flavor in flavors %}
+                    <div class="PackageFlavor">
+                        {{ flavor.os }}, {{ flavor.arch }}, {{ flavor.kind }}, {{ flavor.compiler }}
+                        {{ flavor.glibc }} ({{ flavor.build_date }})
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -84,20 +92,5 @@
 {% endblock %}
 
 {% block script_content %}
-<script>
-    var coll = document.getElementsByClassName("collapsible");
-    var i;
-
-    for (i = 0; i < coll.length; i++) {
-      coll[i].addEventListener("click", function() {
-        this.classList.toggle("collapsible_activated");
-        var content = this.nextElementSibling;
-        if (content.style.maxHeight){
-          content.style.maxHeight = null;
-        } else {
-          content.style.maxHeight = "100%";
-        }
-      });
-    }
-</script>
+<script src="{% static 'js/folding_box.js' %}"></script>
 {% endblock %}
