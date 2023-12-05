@@ -6,5 +6,19 @@ from .models import PackageEntry
 
 class PackageEntryForm(ModelForm):
     class Meta:
+        """
+        Metadata of package form.
+        """
+
         model = PackageEntry
-        fields = ["name", "version", "glibc", "build_date", "os", "arch", "kind", "compiler", "package"]
+        fields = [
+            "name",
+            "version",
+            "glibc",
+            "build_date",
+            "os",
+            "arch",
+            "kind",
+            "compiler",
+            "package",
+        ]

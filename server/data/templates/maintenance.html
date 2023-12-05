@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+
+{% block content %}
+<div class="Article">
+    <div class="ArticleHeader">
+        <h3>Database under maintenance.</h3>
+    </div>
+    <div class="ArticleContent">
+        <div class="MaintenanceLine">
+            <div class="loader"></div>
+            <div class="MaintenanceItems"> Please wait. Database maintenance in progress. This operation can be long.
+                Don't turn off the server.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

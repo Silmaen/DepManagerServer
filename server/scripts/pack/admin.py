@@ -1,3 +1,6 @@
+"""
+Definition of admin.
+"""
 from django.contrib import admin
 
 from .models import *
@@ -8,21 +11,45 @@ class PackageEntryAdmin(admin.ModelAdmin):
     """
     Admin page for packages
     """
+
     list_display = (
-        'name', 'version', 'glibc', 'os', 'arch', 'kind', 'compiler', 'build_date'
+        "name",
+        "version",
+        "glibc",
+        "os",
+        "arch",
+        "kind",
+        "compiler",
+        "build_date",
     )
     list_filter = (
-        'name', 'version', 'glibc', 'os', 'arch', 'kind', 'compiler', 'build_date'
+        "name",
+        "version",
+        "glibc",
+        "os",
+        "arch",
+        "kind",
+        "compiler",
+        "build_date",
     )
-    date_hierarchy = 'date'
-    search_fields = ('name', 'version', 'glibc', 'os', 'arch', 'kind', 'compiler', 'build_date')
+    date_hierarchy = "date"
+    search_fields = (
+        "name",
+        "version",
+        "glibc",
+        "os",
+        "arch",
+        "kind",
+        "compiler",
+        "build_date",
+    )
     fieldsets = (
-        # Fieldset 1: name & version
-        ('Indentity', {'fields': ('name', 'version', 'build_date')}),
-        # Fieldset 2: types
-        ('Indentity', {'fields': ('os', 'arch', 'kind', 'compiler', 'glibc')}),
-        # Fieldset 3: the package file
-        ('Files', {'fields': ('package',)}),
+        # Field set 1: name & version
+        ("Identity", {"fields": ("name", "version", "build_date")}),
+        # Field set 2: types
+        ("Identity", {"fields": ("os", "arch", "kind", "compiler", "glibc")}),
+        # Field set 3: the package file
+        ("Files", {"fields": ("package",)}),
     )
 
 
