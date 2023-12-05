@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="Article">
+    <div class="ArticleHeader">
+        <h3>Some administration actions.</h3>
+    </div>
+    <div class="ArticleContent">
+        <div class="Actions">
+            <a href="{% url 'db_repair' %}" class="ActionsItems button-icon danger">
+                <span class="material-symbols-outlined">sanitizer</span>
+            </a>
+            <div class="ActionsItems">Clean Database (This operation can be very long
+                as all the archive content will be examined. During this operation, all
+                database access will be denied.)
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

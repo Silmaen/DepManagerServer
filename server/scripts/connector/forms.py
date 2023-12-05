@@ -9,18 +9,19 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         """
-        Meta informations
+        Meta information.
         """
+
         fields = UserCreationForm.Meta.fields + ("first_name", "last_name", "email")
 
     def save(self, commit=True):
         """
-        Fonction de sauvegarde
+        Fonction de sauvegarde.
         """
         user = super(CustomUserCreationForm, self).save(commit=False)
-        user.first_name = self.cleaned_data['first_name']
-        user.last_name = self.cleaned_data['last_name']
-        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data["first_name"]
+        user.last_name = self.cleaned_data["last_name"]
+        user.email = self.cleaned_data["email"]
         if commit:
             user.save()
         return user
@@ -33,6 +34,7 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta(UserChangeForm.Meta):
         """
-        Meta informations
+        Meta information.
         """
-        fields = ('email', 'first_name', 'last_name', 'password')
+
+        fields = ("email", "first_name", "last_name", "password")

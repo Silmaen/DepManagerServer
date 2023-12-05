@@ -10,9 +10,11 @@ from .forms import CustomUserCreationForm, CustomUserChangeForm
 def profile(request):
     """User wants to view its profile."""
     if request.user.is_authenticated:
-        return render(request, "registration/profile.html", {
-            **settings.base_info, "user": request.user
-        })
+        return render(
+            request,
+            "registration/profile.html",
+            {**settings.base_info, "user": request.user},
+        )
     else:
         return register(request)
 
@@ -25,15 +27,15 @@ def register(request):
             user = form.save()
             login(request, user)
             return redirect(reverse("index"))
-        return render(request, "registration/register.html", {
-            **settings.base_info,
-            "form": form
-        })
+        return render(
+            request, "registration/register.html", {**settings.base_info, "form": form}
+        )
     else:
-        return render(request, "registration/register.html", {
-            **settings.base_info,
-            "form": CustomUserCreationForm
-        })
+        return render(
+            request,
+            "registration/register.html",
+            {**settings.base_info, "form": CustomUserCreationForm},
+        )
 
 
 def profile_edit(request):
@@ -47,15 +49,20 @@ def profile_edit(request):
             return redirect(reverse("profile"))
     else:
         form = CustomUserChangeForm(instance=request.user)
-    return render(request, "registration/profile_change.html", {
-        **settings.base_info,
-        "form": form,
-    })
+    return render(
+        request,
+        "registration/profile_change.html",
+        {
+            **settings.base_info,
+            "form": form,
+        },
+    )
 
 
 class CustomPasswordResetView(PasswordResetView):
     """
     Custom class for password reset.
     """
+
     from_email = "webmaster@argawaen.net"
-    html_email_template_name = 'registration/password_reset_email.html'
+    html_email_template_name = "registration/password_reset_email.html"

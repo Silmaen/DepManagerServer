@@ -133,8 +133,40 @@
     font-size: 0.9vw;
 }
 
+.Actions{
+    display: flex;
+    flex-flow:row nowrap;
+    align-items: center;
+    width: 100%;
+}
+.ActionsItems{
+    margin: 0.5em 0.8em;
+}
 
+.MaintenanceLine{
+    display: flex;
+    flex-flow:row nowrap;
+    align-items: center;
+    justify-content: center
+    width: 100%;
+}
+.MaintenanceItems{
+    margin: 0.5em 0.8em;
+}
+.loader {
+    border: 0.2em solid var(--theme-article-color-sep);
+    border-top: 0.2em solid var(--theme-title-color);
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    animation: spin 1s linear infinite;
+    margin-right: 1em;
+}
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
 .title_tab {
     width:100%;
