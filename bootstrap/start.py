@@ -17,12 +17,12 @@ server_log = server_data / "log"
 fallback_run = False
 
 config = {
-    "puid"        : 1000,
-    "pgid"        : 1000,
-    "tz"          : "",
-    "admin_name"  : "admin",
+    "puid": 1000,
+    "pgid": 1000,
+    "tz": "",
+    "admin_name": "admin",
     "admin_passwd": "admin",
-    "domain_name" : "",
+    "domain_name": "",
 }
 group_info = {"name": "server", "id": config["pgid"]}
 user_info = {"name": "server", "id": config["puid"]}
@@ -58,11 +58,18 @@ def check_env():
             print(f"ERROR: PGID must be integer ({err})", file=stderr)
         config["pgid"] = gid
     if config["domain_name"] in [None, ""]:
-        print("Warning: DOMAIN_NAME environment variable Must be set to allow POST requests.", file=stderr)
-        print("         It can be in the form of real domain name: 'example.com' or an IP.", file=stderr)
         print(
-                "         If you are not using the standard http or https port, don't forget to add it e.g. '127.0.0.1:8080'.",
-                file=stderr)
+            "Warning: DOMAIN_NAME environment variable Must be set to allow POST requests.",
+            file=stderr,
+        )
+        print(
+            "         It can be in the form of real domain name: 'example.com' or an IP.",
+            file=stderr,
+        )
+        print(
+            "         If you are not using the standard http or https port, don't forget to add it e.g. '127.0.0.1:8080'.",
+            file=stderr,
+        )
     if not result:
         print("Problem in environment...", file=stderr)
         print("======== ENV DUMP ==========", file=stderr)
@@ -80,6 +87,7 @@ def check_user_exist():
     """
     import pwd
     import grp
+
     global user_info, group_info
     try:
         # check group info and name
@@ -87,7 +95,9 @@ def check_user_exist():
         if group_info["id"] in [it.gr_gid for it in grp.getgrall()]:
             # a group with the needed Id already exists -> using its name
             group_info["name"] = str(grp.getgrgid(group_info["id"]).gr_name)
-            print(f"Group {group_info['id']} already exist with name: {group_info['name']}")
+            print(
+                f"Group {group_info['id']} already exist with name: {group_info['name']}"
+            )
         else:
             if group_info["name"] in [str(it.gr_name) for it in grp.getgrall()]:
                 # a group with the default name already exists -> adapt the name
@@ -95,8 +105,12 @@ def check_user_exist():
                 while group_info["name"] in [str(it.gr_name) for it in grp.getgrall()]:
                     print(f"Group named {group_info['name']} already exist...")
                     group_info["name"] += "0"
-            print(f"Create group named {group_info['name']} with gid: {group_info['id']}")
-            if not exec_cmd(f"addgroup -g {group_info['id']} {group_info['name']}", True):
+            print(
+                f"Create group named {group_info['name']} with gid: {group_info['id']}"
+            )
+            if not exec_cmd(
+                f"addgroup -g {group_info['id']} {group_info['name']}", True
+            ):
                 print("ERROR detected during addgroup...", file=stderr)
                 return False
 
@@ -105,7 +119,9 @@ def check_user_exist():
         if user_info["id"] in [it.pw_uid for it in pwd.getpwall()]:
             # a user with the needed id already exists, use its name
             user_info["name"] = str(pwd.getpwuid(user_info["id"]).pw_name)
-            print(f"User {user_info['id']} already exist with name: {user_info['name']}")
+            print(
+                f"User {user_info['id']} already exist with name: {user_info['name']}"
+            )
         else:
             if user_info["name"] in [str(it.pw_name) for it in pwd.getpwall()]:
                 # a user with the default name already exists -> adapt the name
@@ -114,7 +130,10 @@ def check_user_exist():
                     print(f"User named {user_info['name']} already exist...")
                     user_info["name"] += "0"
             print(f"Create user named {user_info['name']} with pid: {user_info['id']}")
-            if not exec_cmd(f"adduser -D -H -u {user_info['id']} -G {group_info['name']} {user_info['name']}", True):
+            if not exec_cmd(
+                f"adduser -D -H -u {user_info['id']} -G {group_info['name']} {user_info['name']}",
+                True,
+            ):
                 print("ERROR detected during adduser...", file=stderr)
                 return False
     except Exception as err:
@@ -131,8 +150,15 @@ def correct_permission():
     import pwd
     import grp
     import os
+
     try:
-        folder_list = [server_config, server_scripts, server_data, server_log, packages_dir]
+        folder_list = [
+            server_config,
+            server_scripts,
+            server_data,
+            server_log,
+            packages_dir,
+        ]
         for i in range(10):
             folder_list.append(server_data_upload / str(i))
         # check permission
@@ -148,12 +174,19 @@ def correct_permission():
             if uid != user_info["id"] or gid != group_info["id"]:
                 for root, dirs, files in os.walk(folder):
                     for sub_folder in dirs:
-                        os.chown(os.path.join(root, sub_folder), user_info["id"], group_info["id"])
+                        os.chown(
+                            os.path.join(root, sub_folder),
+                            user_info["id"],
+                            group_info["id"],
+                        )
                     for file in files:
-                        os.chown(os.path.join(root, file), user_info["id"], group_info["id"])
+                        os.chown(
+                            os.path.join(root, file), user_info["id"], group_info["id"]
+                        )
                 os.chown(folder, user_info["id"], group_info["id"])
                 print(
-                        f"Changing permission of {folder} to {user_info['name']}({user_info['id']}):{group_info['name']}({group_info['id']})")
+                    f"Changing permission of {folder} to {user_info['name']}({user_info['id']}):{group_info['name']}({group_info['id']})"
+                )
     except Exception as err:
         print(f"ERROR: unable to change permission: {err}", file=stderr)
         return False
@@ -173,6 +206,7 @@ def exec_cmd(cmd: str, as_root=False):
     :return:
     """
     import subprocess
+
     def demote():
         """
         Change the exec credential.
@@ -183,6 +217,7 @@ def exec_cmd(cmd: str, as_root=False):
             Define the user id.
             """
             import os
+
             os.setgid(group_info["id"])
             os.setuid(user_info["id"])
 
@@ -226,11 +261,15 @@ def getUserGroup():
     :return: user_name, group_name.
     """
     import pwd, grp
+
     try:
         user_name = str(pwd.getpwuid(config["puid"]).pw_name)
         group_name = str(grp.getgrgid(config["pgid"]).gr_name)
     except Exception as err:
-        print(f"ERROR no user or group with uid={config['puid']} gid={config['puid']}: {err}.", file=stderr)
+        print(
+            f"ERROR no user or group with uid={config['puid']} gid={config['puid']}: {err}.",
+            file=stderr,
+        )
         print(f"Fallback to root", file=stderr)
         user_name = "root"
         group_name = "root"
@@ -263,6 +302,7 @@ def check_admin_user():
         # create log folder if not exists
         print("Check if an admin user already exists.")
         import sqlite3
+
         con = sqlite3.connect("/data/packages.db")
         cur = con.cursor()
         res = cur.execute("SELECT * FROM auth_user WHERE is_superuser=1")
@@ -305,6 +345,7 @@ def start_server():
     Start of the Server
     """
     import time
+
     print("Starting server")
     os.chdir(server_scripts)
     print("Starting Nginx:")
@@ -315,12 +356,14 @@ def start_server():
     if not (server_scripts / "scripts" / "wsgi.py").exists():
         print(f"ERROR: no project scripts is configured.", file=stderr)
         return False
-    cmd = "gunicorn scripts.wsgi" + \
-          " --bind=0.0.0.0:8000" + \
-          " --reload" + \
-          " --daemon" + \
-          " --log-level info" + \
-          " --log-file /data/log/gunicorn.log"
+    cmd = (
+        "gunicorn scripts.wsgi"
+        + " --bind=0.0.0.0:8000"
+        + " --reload"
+        + " --daemon"
+        + " --log-level info"
+        + " --log-file /data/log/gunicorn.log"
+    )
     if not exec_cmd(cmd, True):
         return False
     print("Server Successfully started")

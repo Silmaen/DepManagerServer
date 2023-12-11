@@ -1,0 +1,167 @@
+"""
+Database Repairing actions.
+"""
+from datetime import datetime
+from pathlib import Path
+
+from .logger import logger
+from .models import PackageEntry, old_date, safe_create
+
+
+def get_file_infos(file: Path):
+    """
+    Try to open archive file to get package metadata.
+    :param file: The file name.
+    :return: The data read in archive.
+    """
+    import tarfile
+
+    if file.suffix != ".tgz":
+        logger.warning(f"Non-archive file in package dir: {file.name}")
+        return {}
+    with tarfile.open(file, "r:gz") as archive:
+        try:
+            infos = archive.extractfile("./edp.info")
+            data = {
+                "name": "",
+                "version": "",
+                "os": "",
+                "arch": "",
+                "kind": "",
+                "compiler": "",
+                "glibc": "",
+                "build_date": old_date,
+            }
+            content = infos.read().decode("utf-8")
+            # for line in infos.readlines():
+            #    line = line.decode("utf-8")
+            for line in content.splitlines(keepends=False):
+                if "#" in line:
+                    line = line.split("#")[0].strip()
+                if "=" not in line:
+                    continue
+                key, val = [it.strip() for it in line.split("=", 1)]
+                if key in data.keys():
+                    if key == "build_date":
+                        if "+" not in val:
+                            val += "+0000"
+                        data[key] = datetime.fromisoformat(val)
+                        continue
+                    data[key] = val
+            return data
+        except KeyError:
+            logger.warning(
+                f"Archive file {file.name} does not seems to have edp.info file"
+            )
+    return {}
+
+
+def long_repair(do_correct: bool = False, skip_large_files: bool = True):
+    """
+    Repair the database by looking into files.
+    """
+    start = datetime.now()
+    total_error_count = 0
+    total_error_corrected = 0
+    try:
+        #
+        # FIRST PASS: check if local file correspond to database entry
+        #
+        query = PackageEntry.objects.all()
+        if len(query) == 0:
+            logger.info("Nothing in the query.")
+            return
+        pack_dir = Path(query[0].package.path).parent
+        counter = -1
+        for file in pack_dir.iterdir():
+            counter += 1
+            if skip_large_files and file.stat().st_size > 6 * 1024 * 1024:
+                logger.warning(f"{counter:08d} file: {file.name} skipping large file.")
+                continue
+            f_time_file = datetime.now()
+            file_error_count = 0
+            file_error_corrected = 0
+            in_db = PackageEntry.objects.filter(package__endswith=f"/{file.name}")
+            data = get_file_infos(file)
+            if len(in_db) == 0:
+                logger.warning(
+                    f"{counter:08d} file: {file.name} not referenced in the database, need to be added ({datetime.now() - f_time_file})."
+                )
+                total_error_count += 1
+                if do_correct:
+                    entry = safe_create(data, file)
+                    if entry is not None:
+                        entry.save()
+                        total_error_corrected += 1
+                continue
+            elif len(in_db) > 1:
+                logger.warning(
+                    f"{counter:08d} file: {file.name} referenced multiple times in the database, keep only the best entry ({datetime.now() - f_time_file})."
+                )
+                total_error_count += 1
+                if do_correct:
+                    for i in range(len(in_db)):
+                        if i == 0:
+                            continue  # we keep thi one
+                        in_db[i].delete(keep_file=True)
+                    total_error_corrected += 1
+            pack = in_db[0]
+            db_data = {
+                "name": pack.name,
+                "version": pack.version,
+                "os": pack.get_os_display(),
+                "arch": pack.get_arch_display(),
+                "kind": pack.get_kind_display(),
+                "compiler": pack.get_compiler_display().split("-")[0],
+                "glibc": pack.glibc,
+                "build_date": pack.build_date,
+            }
+            f_time_info = datetime.now()
+            f_time_info = datetime.now() - f_time_info
+            if len(data) == 0:
+                total_error_count += 1
+                continue
+            for key in data.keys():
+                if data[key] != db_data[key]:
+                    logger.warning(
+                        f"{counter:08d} file: {file.name} different {key}: {data[key]} vs. {db_data[key]} ({datetime.now() - f_time_file} / {f_time_info})."
+                    )
+                    if do_correct:
+                        try:
+                            setattr(pack, key, data[key])
+                            pack.save()
+                            file_error_corrected += 1
+                        except Exception as err:
+                            logger.error(f"While trying to correct file: {err}")
+                    file_error_count += 1
+            if file_error_count > 0:
+                total_error_count += 1
+                if file_error_count == file_error_corrected:
+                    total_error_corrected += 1
+            else:
+                # logger.trace(
+                #    f"{counter:08d} file: {file.name} is correct with database ({datetime.now() - f_time_file} / {f_time_info})."
+                # )
+                pass
+        #
+        # SECOND PASS: check database entries
+        #
+        # redo the query after first corrections
+        query = PackageEntry.objects.all()
+        for item in query:
+            if item.package.path in ["", None]:
+                logger.warning(f"Database entry {item.pk}: field 'file' is empty.")
+                total_error_count += 1
+                continue
+            if not Path(item.package.path).resolve().exists():
+                logger.warning(
+                    f"Database entry {item.pk}: field 'file' does not refer to existing file."
+                )
+                total_error_count += 1
+                continue
+    except Exception as err:
+        logger.error(f"Exception during database repair: {err}.")
+    duration = datetime.now() - start
+    logger.info(
+        f"Database repaired issue: {total_error_corrected} / {total_error_count} -- database size: {PackageEntry.objects.count()} in {duration}."
+    )

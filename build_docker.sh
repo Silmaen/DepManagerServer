@@ -6,8 +6,8 @@ if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then
   version="${version}-dev"
 fi
 rev=$(git rev-parse --short HEAD)
-echo ${version} > server/VERSION
-echo ${rev} >> server/VERSION
+echo "${version}" > server/VERSION
+echo "${rev}" >> server/VERSION
 registry="registry.argawaen.net"
 image_name="argawaen/depmanager-server"
 tag="${version}-${rev}"
