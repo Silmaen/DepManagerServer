@@ -17,7 +17,6 @@ Including another URLconf
 from django.urls import path, include
 
 urlpatterns = [
-    path('', include('pack.urls')),
-    path('profile/', include('connector.urls')),
-    # path('admin/', admin.site.urls),
+    path("", include("pack.urls")),
+    path("profile/", include("connector.urls")),
 ]

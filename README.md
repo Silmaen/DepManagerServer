@@ -55,7 +55,7 @@ as owner.
 ### DOMAIN_NAME
 
 The domain of this server. This parameter is mandatory because used in CSRF resolution of POST REQUESTS.
-By default: '127.0.0.1' and 'localhost' are used. It is also importat to add the port if not using
+By default: '127.0.0.1' and 'localhost' are used. It is also important to add the port if not using
 standard http or https ports in request.
 
 If you can access to this server by the url `http://10.15.165.12:7856`
