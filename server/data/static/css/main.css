@@ -52,28 +52,28 @@ body {
     justify-content: space-between;
     align-items: start;
     margin: 0;
-    font-size: 1rem;
+    font-size: 1em;
     font-weight: 400;
     color: var(--theme-color);
     text-align: left;
     background-color: var(--theme-bg-color);
     line-height: 1.5;
 }
-h1 {font-size: 27px;}
-h2 {font-size: 25px;}
-h3 {font-size: 23px;}
-h4 {font-size: 21px;}
-h5 {font-size: 17px;}
-h6 {font-size: 15px;}
+h1 {font-size: 1.5em;}
+h2 {font-size: 1.2em;}
+h3 {font-size: 1.1em;}
+h4 {font-size: 1.0em;}
+h5 {font-size: 0.8em;}
+h6 {font-size: 0.7em;}
 
 @media all and (max-width: 1000px) {
-body {font-size:2.1vw;}
-h1 {font-size: 4.05vw;}
-h2 {font-size: 3.75vw;}
-h3 {font-size: 3.45vw;}
-h4 {font-size: 3.15vw;}
-h5 {font-size: 2.55vw;}
-h6 {font-size: 2.25vw;}
+body {font-size:0.9em;}
+h1 {font-size: 1.5em;}
+h2 {font-size: 1.2em;}
+h3 {font-size: 1.1em;}
+h4 {font-size: 1.0em;}
+h5 {font-size: 0.8em;}
+h6 {font-size: 0.7em;}
 }
 input:focus,select:focus,button:focus,textarea:focus {
     outline: none;
@@ -211,10 +211,10 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 .site-title {
     display: flex;
     align-items: center;
-    padding-top: .3125rem;
-    padding-bottom: .3125rem;
-    margin-right: 1rem;
-    font-size: 1.25rem;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+    margin-right: 1em;
+    font-size: 1em;
     white-space: nowrap;
     height: 50px;
 }
@@ -225,18 +225,19 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 }
 .site-title h1{
     display:inline-block;
-    padding: 11px 11px;
+    padding: 0.5em 0.5em;
     color: var(--theme-top-btm-bar-color);
     text-transform: uppercase;
     font-weight: bold;
+    font-size: 1em;
 }
 @media all and (max-width: 1000px) {
     .site-title {
         height: 20px;
+        font-size: 0.5em;
     }
-    .site-title h1 {
-        font-size: 2.1vw;
-        padding: 3px 3px;
+    .header .button {
+        font-size: 0.5em;
     }
 }
 /* ...... User ..... */
@@ -260,15 +261,15 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     margin-left:auto !important;
 }
 .navmenu>li:not(:last-child) {
-    margin-right:1rem
+    margin-right:1em
 }
 .navmenu ul, .navmenu ol{
     padding-left: 0;
 }
 .navmenu li {
     list-style: none;
-    padding:0.5rem;
-    padding-bottom: 0.7rem;
+    padding:0.5em;
+    padding-bottom: 0.7em;
 }
 .navmenu .navitem {
     position:relative;
@@ -277,20 +278,11 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
 }
 .navmenu li a{
     display: flex;
-    font-size: 15px;
+    font-size: 1.1m;
     color: var(--theme-btn-color);
     text-transform: uppercase;
     font-weight: bold;
     font-family: sans-serif;
-}
-@media all and (max-width: 1000px) {
-    .navmenu li {
-        padding:0.2rem;
-        padding-bottom: 0.4rem;
-    }
-    .navmenu li a{
-        font-size: 2.1vw;
-    }
 }
 .navmenu .navitem>a::before {
     transform:scale3d(1,1,1);
@@ -308,7 +300,7 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     position:absolute;
     top:0px;
     width:100%;
-    margin-left:-0.5rem;
+    margin-left:-0.5em;
     height:2px;
     background:var(--theme-btn-color-hv);
     transform:scale3d(0,1,1);
@@ -329,6 +321,11 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     color:var(--theme-btn-color-hv);
 }
 
+@media all and (max-width: 1000px) {
+.navmenu li a{
+    font-size: 0.7em;
+}
+}
 /* -------------- LOWER HEADER -------------- */
 .page-title {
     background-color:var(--theme-page-title-bg-color);
@@ -356,6 +353,12 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     align-content: center;
     align-items: center;
 }
+@media all and (max-width: 1000px) {
+.footer {
+    height: 150px;
+    font-size: 0.6em;
+}
+}
 .footer a, .footer p{
     color:var(--theme-top-btm-bar-color);
     display:flex;
@@ -370,5 +373,5 @@ article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, s
     color: var(--theme-btn-color-hv);
 }
 .footer p a img {
-    max-height: 1rem;
+    max-height: 1.4em;
 }
