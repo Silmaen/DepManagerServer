@@ -8,7 +8,7 @@ from subprocess import run
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Permission, User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -126,6 +126,12 @@ def delete_package(request, pk):
     if request.method == "POST":
         pack = PackageEntry.objects.get(pk=pk)
         pack.delete()
+        # Récupérer l'URL de la page précédente
+        previous_page = request.META.get('HTTP_REFERER')
+
+        # Rediriger vers la page précédente
+        if previous_page:
+            return HttpResponseRedirect(previous_page)
     return redirect("package")
 
 

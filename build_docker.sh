@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+echo "building the docker image."
 version=$(cat VERSION)
 branch=$(git rev-parse --abbrev-ref HEAD)
 if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then

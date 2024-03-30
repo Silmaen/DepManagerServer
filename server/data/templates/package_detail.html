@@ -13,7 +13,7 @@
 <div class="PackageList user_form">
     {% for version, flavors in package.versions.items %}
     <div class="Package" id="{{ version }}">
-        <div class="PackageName folding_box_header" onclick="toggleContent('{{ version }}')">{{ version }}</div>
+        <div class="PackageVersion folding_box_header" onclick="toggleContent('{{ version }}')">{{ version }}</div>
         <div class="PackageFlavors folding_box_content">
             {% for flavor in flavors %}
             <div class="PackageDetail">
