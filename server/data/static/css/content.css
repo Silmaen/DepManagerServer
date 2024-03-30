@@ -83,7 +83,6 @@
     border: 1px solid var(--theme-article-color-sep);
     border-radius:0.5em;
     box-shadow: 0 0 2.7em rgba(0, 0, 0, 0.5);
-
 }
 .PackageHeader {
     padding: 0.5em;
@@ -110,6 +109,7 @@
     padding: 0.5em;
     border: 1px solid var(--theme-article-color-sep);
     border-radius:0.5em;
+    font-size: 1.6em;
 }
 .PackageDetail2{
     display: flex;
@@ -122,16 +122,16 @@
     display: flex;
     flex-flow: column nowrap;
     padding-left: 3em;
-    font-size:1em;
+    font-size:1.5em;
 }
 
 .PackageName, .PackageVersion {
-    font-size: 1.em;
+    font-size: 1.2em;
     margin: 0 0.5em;
     color: var(--theme-btn-color);
 }
 .PackageVersion {
-    font-size: 1.1em;
+    font-size: 1.8em;
 }
 
 .Actions{
