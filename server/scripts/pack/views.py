@@ -1,6 +1,7 @@
 """
 Package views
 """
+
 from base64 import b64decode
 from pathlib import Path
 from shutil import move
@@ -12,9 +13,12 @@ from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from scripts.settings import MEDIA_ROOT
+from scripts.settings import MEDIA_ROOT, SITE_VERSION, SITE_HASH, SITE_API_VERSION
 from .db_locking import locker
+from .decorators.database import require_not_locked
+from .decorators.permissions import require_auth, require_perm
 from .forms import PackageEntryForm
+from .logger import logger
 from .models import (
     get_package_list,
     get_package_detail,
@@ -23,13 +27,7 @@ from .models import (
     get_entry_count,
     delete_packages,
 )
-from .task import database_repair
-
-root = Path(__file__).resolve().parent.parent.parent
-with open(root / "VERSION") as fp:
-    lines = fp.readlines()
-SiteVersion = lines[0].strip()
-SiteHash = lines[1].strip()
+from .task import database_repair, database_import
 
 
 def index(request):
@@ -43,43 +41,53 @@ def index(request):
         "index.html",
         {
             "title": "home",
-            "version": {"number": SiteVersion, "hash": SiteHash},
+            "version": {"number": SITE_VERSION, "hash": SITE_HASH},
             "pack_number": get_entry_count(),
         },
     )
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_not_locked
 def packages(request):
     """
 
     :param request:
     :return:
     """
-    if locker.is_locked():
-        return redirect("maintenance")
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
-    ifilter = {}
+    temp_filter = {}
     if request.method == "POST":
-        temp_filter = dict(request.POST)
-        for attr in ["name", "version", "glibc", "os", "arch", "kind", "compiler"]:
-            if attr in temp_filter:
-                ifilter[attr] = temp_filter[attr][0]
-    i_packages = get_package_list(ifilter)
+        post = dict(request.POST)
+        for key in ["os", "arch", "kind", "abi", "name", "version"]:
+            if key not in post:
+                continue
+            temp_filter[key] = post[key][0]
+    possible = {
+        "os": ["any", "linux", "windows"],
+        "arch": ["any", "x86_64", "aarch64"],
+        "kind": ["any", "static", "shared", "header"],
+        "abi": ["any", "gnu", "llvm", "msvc"],
+    }
+    logger.debug(f"temp_filter: {temp_filter}")
+    i_packages = get_package_list(temp_filter)
     return render(
         request,
         "package.html",
         {
             "title": "packages",
             "page": "packages",
-            "version": {"number": SiteVersion, "hash": SiteHash},
+            "version": {"number": SITE_VERSION, "hash": SITE_HASH},
             "package": i_packages,
+            "filter": temp_filter,
+            "filter_possible": possible,
         },
     )
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_not_locked
 def detail_package(request, name):
     """
 
@@ -87,12 +95,6 @@ def detail_package(request, name):
     :param name:
     :return:
     """
-    if locker.is_locked():
-        return redirect("maintenance")
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
     package = get_package_detail(name)
     if package is None:
         return redirect("package")
@@ -102,12 +104,16 @@ def detail_package(request, name):
         {
             "title": f"{name}",
             "page": "packages",
-            "version": {"number": SiteVersion, "hash": SiteHash},
+            "version": {"number": SITE_VERSION, "hash": SITE_HASH},
             "package": package,
         },
     )
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_perm("pack.delete_packageentry", redirect_url="package")
+@require_not_locked
 def delete_package(request, pk):
     """
 
@@ -115,19 +121,11 @@ def delete_package(request, pk):
     :param pk:
     :return:
     """
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
-    if not request.user.has_perm("pack.delete_packageentry"):
-        return redirect("package")
-    if locker.is_locked():
-        return redirect("maintenance")
     if request.method == "POST":
         pack = PackageEntry.objects.get(pk=pk)
         pack.delete()
         # Récupérer l'URL de la page précédente
-        previous_page = request.META.get('HTTP_REFERER')
+        previous_page = request.META.get("HTTP_REFERER")
 
         # Rediriger vers la page précédente
         if previous_page:
@@ -135,59 +133,50 @@ def delete_package(request, pk):
     return redirect("package")
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_perm("pack.delete_packageentry", redirect_url="package")
+@require_not_locked
 def admin_db(request):
     """
 
     :param request:
     :return:
     """
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
-    if not request.user.has_perm("pack.delete_packageentry"):
-        return redirect("package")
-    if locker.is_locked():
-        return redirect("maintenance")
     return render(
         request,
         "admin.html",
         {
             "title": "Administration",
             "page": "admin",
-            "version": {"number": SiteVersion, "hash": SiteHash},
+            "version": {"number": SITE_VERSION, "hash": SITE_HASH},
         },
     )
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_perm("pack.delete_packageentry", redirect_url="package")
+@require_not_locked
 def db_repair(request):
     """
 
     :param request:
     :return:
     """
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
-    if not request.user.has_perm("pack.delete_packageentry"):
-        return redirect("package")
-    if locker.is_locked():
-        return redirect("maintenance")
     database_repair()
     return redirect("admin_db")
 
 
+@require_auth
+@require_perm("auth.vew_user")
+@require_not_locked
 def users(request):
     """
 
     :param request:
     :return:
     """
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if locker.is_locked():
-        return redirect("maintenance")
     entries = User.objects.all()
     p_users = []
     for entry in entries:
@@ -210,12 +199,15 @@ def users(request):
         {
             "title": "users",
             "page": "users",
-            "version": {"number": SiteVersion, "hash": SiteHash},
+            "version": {"number": SITE_VERSION, "hash": SITE_HASH},
             "users": p_users,
         },
     )
 
 
+@require_auth
+@require_perm("auth.delete_user")
+@require_not_locked
 def modif_user(request, pk):
     """
 
@@ -223,12 +215,6 @@ def modif_user(request, pk):
     :param pk:
     :return:
     """
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("auth.delete_user"):
-        return redirect("/")
-    if locker.is_locked():
-        return redirect("maintenance")
     if request.method == "POST":
         user = User.objects.get(pk=pk)
         if "action" not in request.POST:
@@ -273,56 +259,67 @@ def modif_user(request, pk):
     return redirect("users")
 
 
+@require_auth
+@require_perm("pack.view_packageentry")
 def maintenance_page(request):
     """
 
     :param request:
     :return:
     """
-    if not locker.is_locked():
+    if not locker.is_locked():  # the lock has been released go back to packages
         return redirect("package")
-    if not request.user.is_authenticated:
-        return redirect("/")
-    if not request.user.has_perm("pack.view_packageentry"):
-        return redirect("/")
     return render(
         request,
         "maintenance.html",
     )
 
 
+def auths_required(request):
+    """
+    Check if the user is authenticated and has the required permissions.
+    If not, redirect to the login page or show an error message.
+    :param request:
+    :return: HttpResponse
+    """
+    if not request.user.is_authenticated:
+        if "Authorization" in request.headers:
+            try:
+                key, dec = (
+                    b64decode(request.headers["Authorization"].split()[-1])
+                    .decode("ascii")
+                    .split(":", 1)
+                )
+                user = authenticate(request, username=key, password=dec)
+                if user is None:
+                    return HttpResponseForbidden(
+                        f"""Only authenticated user allowed
+    Login: {key}, password: {dec} is invalid."""
+                    )
+                login(request, user)
+            except Exception as err:
+                return HttpResponseForbidden(
+                    f"""Only authenticated user allowed
+    Method: {request.method},Headers: {request.headers}
+    ERROR: {err}
+    """
+                )
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden(f"""Only authenticated user allowed""")
+    return None
+
+
 @csrf_exempt
 def api(request):
     """
-
+    Second version of api, with subversion management and better error handling.
     :param request:
     :return:
     """
     try:
-        if not request.user.is_authenticated:
-            if "Authorization" in request.headers:
-                try:
-                    key, dec = (
-                        b64decode(request.headers["Authorization"].split()[-1])
-                        .decode("ascii")
-                        .split(":", 1)
-                    )
-                    user = authenticate(request, username=key, password=dec)
-                    if user is None:
-                        return HttpResponseForbidden(
-                            f"""Only authenticated user allowed
-    Login: {key}, password: {dec} is invalid."""
-                        )
-                    login(request, user)
-                except Exception as err:
-                    return HttpResponseForbidden(
-                        f"""Only authenticated user allowed
-    Method: {request.method},Headers: {request.headers}
-    ERROR: {err}
-    """
-                    )
-            if not request.user.is_authenticated:
-                return HttpResponseForbidden(f"""Only authenticated user allowed""")
+        auth_response = auths_required(request)
+        if auth_response is not None:
+            return auth_response
         if not request.user.has_perm("pack.view_packageentry"):
             return HttpResponseForbidden("Please ask the right to see packages")
 
@@ -331,13 +328,15 @@ def api(request):
                 f"ERROR: Server is under maintenance, try again later.", status=406
             )
         if request.method == "GET":
-            resp = ""
             entries = PackageEntry.objects.all()
-            for pack in entries:
-                resp += f"{pack.to_dep_entry()}\n"
+            resp = "\n".join(pack.to_dep_entry() for pack in entries)
             return HttpResponse(resp)
         if request.method == "POST":
+            logger.debug(f"POST request on API")
+            logger.debug(f"request.body: {request.body}")
             data = request.POST.dict()
+            logger.debug(f"request.POST: {data}")
+
             if "action" not in data:
                 return HttpResponse(
                     f"ERROR no asked action.\nPOST: {data}\nheaders: {request.headers}",
@@ -348,6 +347,11 @@ def api(request):
                     f"ERROR invalid action.\nPOST: {data}\nheaders: {request.headers}",
                     status=406,
                 )
+            #
+            # Convert in case of old format
+            if "compiler" in data:
+                data["abi"] = data["compiler"]
+                data.pop("compiler")
             #
             # no additional credentials required
             if data["action"] == "pull":
@@ -362,7 +366,10 @@ def api(request):
                     resp += f"{pack_u}\n"
                 return HttpResponse(resp, status=200)
             elif data["action"] == "version":
-                return HttpResponse(f"version: {SiteVersion}\n", status=200)
+                return HttpResponse(
+                    f"version: {SITE_VERSION}\napi_version: {SITE_API_VERSION}\n",
+                    status=200,
+                )
             #
             # Need credentials of adding a package
             elif data["action"] == "push":
@@ -399,7 +406,7 @@ def api(request):
                                 os=data["os"],
                                 arch=data["arch"],
                                 kind=data["kind"],
-                                compiler=data["compiler"],
+                                abi=data["abi"],
                                 glibc=data["glibc"],
                                 build_date=data["build_date"],
                                 package=str(new_path),
@@ -416,7 +423,7 @@ def api(request):
                                 os=data["os"],
                                 arch=data["arch"],
                                 kind=data["kind"],
-                                compiler=data["compiler"],
+                                abi=data["abi"],
                                 package=str(new_path),
                             )
                             entry.save()
@@ -457,3 +464,23 @@ def api(request):
         return HttpResponseForbidden()
     except Exception as err:
         return HttpResponse(f"""Exception during treatment {err}.""", status=406)
+
+
+@require_auth
+@require_perm("pack.view_packageentry")
+@require_perm("pack.delete_packageentry", redirect_url="package")
+@require_not_locked
+def repo_clone(request):
+    """
+    Clone a repository from the server.
+    :param request:
+    :return:
+    """
+    if request.method != "POST":
+        return redirect("admin_db")
+    database_import(
+        request.POST.get("url", ""),
+        request.POST.get("login", ""),
+        request.POST.get("password", ""),
+    )
+    return redirect("admin_db")

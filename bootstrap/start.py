@@ -10,9 +10,11 @@ from sys import stderr
 server_path = Path("/server")
 server_config = server_path / "config"
 server_data = Path("/data")
+server_migrations = server_data / "migrations"
 packages_dir = server_data / "packages"
 server_data_upload = server_data / "_upload"
 server_scripts = server_path / "scripts"
+script_migrations = server_scripts / "pack" / "migrations"
 server_log = server_data / "log"
 fallback_run = False
 
@@ -329,6 +331,11 @@ def do_migrations():
     Execute the migrations
     """
     print("Checking migrations")
+    if server_migrations.exists():
+        shutil.copytree(server_migrations, script_migrations, dirs_exist_ok=True)
+        print("RESTORING previous migrations")
+    else:
+        print("No previous migrations found.")
     os.chdir(server_scripts)
     if not exec_cmd("python3 manage.py makemigrations"):
         print("ERROR: Error making migrations.", file=stderr)
@@ -336,7 +343,17 @@ def do_migrations():
     if not exec_cmd("python3 manage.py migrate"):
         print("ERROR: Error migrating.", file=stderr)
         return False
+    shutil.copytree(script_migrations, server_migrations, dirs_exist_ok=True)
+    print("SAVE migrations")
     print("Migrations OK.")
+    return True
+
+
+def collect_static():
+    print("Collecting static")
+    if not (exec_cmd("python3 manage.py collectstatic --noinput")):
+        print("ERROR: Error collecting static files.", file=stderr)
+        return False
     return True
 
 
@@ -361,6 +378,8 @@ def start_server():
         + " --bind=0.0.0.0:8000"
         + " --reload"
         + " --daemon"
+        + " --workers=3"
+        + " --threads=2"
         + " --log-level info"
         + " --log-file /data/log/gunicorn.log"
     )
@@ -388,6 +407,9 @@ def main():
             fall_back()
             return
         if not do_migrations():
+            fall_back()
+            return
+        if not collect_static():
             fall_back()
             return
         if not check_admin_user():

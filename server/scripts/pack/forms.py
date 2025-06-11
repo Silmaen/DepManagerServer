@@ -1,4 +1,5 @@
 """Packages forms"""
+
 from django.forms import ModelForm
 
 from .models import PackageEntry
@@ -19,6 +20,6 @@ class PackageEntryForm(ModelForm):
             "os",
             "arch",
             "kind",
-            "compiler",
+            "abi",
             "package",
         ]
