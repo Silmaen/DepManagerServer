@@ -1,6 +1,7 @@
 """
 Definition of admin.
 """
+
 from django.contrib import admin
 
 from .models import *
@@ -19,7 +20,7 @@ class PackageEntryAdmin(admin.ModelAdmin):
         "os",
         "arch",
         "kind",
-        "compiler",
+        "abi",
         "build_date",
     )
     list_filter = (
@@ -29,7 +30,7 @@ class PackageEntryAdmin(admin.ModelAdmin):
         "os",
         "arch",
         "kind",
-        "compiler",
+        "abi",
         "build_date",
     )
     date_hierarchy = "date"
@@ -40,14 +41,14 @@ class PackageEntryAdmin(admin.ModelAdmin):
         "os",
         "arch",
         "kind",
-        "compiler",
+        "abi",
         "build_date",
     )
     fieldsets = (
         # Field set 1: name & version
         ("Identity", {"fields": ("name", "version", "build_date")}),
         # Field set 2: types
-        ("Identity", {"fields": ("os", "arch", "kind", "compiler", "glibc")}),
+        ("Identity", {"fields": ("os", "arch", "kind", "abi", "glibc")}),
         # Field set 3: the package file
         ("Files", {"fields": ("package",)}),
     )

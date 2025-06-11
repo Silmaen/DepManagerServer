@@ -7,6 +7,7 @@
 .folding_box_header {
     cursor: pointer;
 }
+
 .folding_box_header::before {
     content: "\25BC"; /* Unicode pour la flèche vers le bas */
     display: inline-block;
@@ -14,6 +15,7 @@
     margin-left: 0.1em;
     transition: transform 0.3s;
 }
+
 .folding_box_header.open::before {
     transform: rotate(180deg);
 }
@@ -23,7 +25,7 @@
 
 .folding_box_content {
     overflow: hidden;
-    padding: 0px;
+    padding: 0;
     transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s;
     max-height: 0;
     opacity: 0;

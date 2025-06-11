@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -20,26 +21,56 @@ SITE_DIR = BASE_DIR.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=mnlaqamlk--(f7q19^w(6q0cfx6q&t@_^78r=9cyqwn9ux(t*"
+if "SECRET_KEY" in os.environ:
+    SECRET_KEY = os.environ["SECRET_KEY"]
+else:
+    SECRET_KEY = "django-insecure-=mnlaqamlk--(f7q19^w(6q0cfx6q&t@_^78r=9cyqwn9ux(t*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if "DEBUG" in os.environ:
+    DEBUG = os.environ["DEBUG"].lower() == "true"
+else:
+    DEBUG = True
+
+if (SITE_DIR / "VERSION").exists():
+    with open(SITE_DIR / "VERSION") as fp:
+        lines = fp.readlines()
+    SITE_VERSION = lines[0].strip()
+    if len(lines) > 1:
+        SITE_HASH = lines[1].strip()
+else:
+    SITE_VERSION = "4.0.0"
+    SITE_HASH = "unknown"
+if "GIT_HASH" in os.environ:
+    SITE_HASH = os.environ["GIT_HASH"]
+SITE_API_VERSION = "2.0.0"
 #
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", "http://localhost"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1",
+    "http://localhost",
+    "http://127.0.0.1:8123",
+    "http://localhost:8123",
+]
 if "DOMAIN_NAME" in os.environ:
-    CSRF_TRUSTED_ORIGINS = [
+    CSRF_TRUSTED_ORIGINS += [
         f"http://*.{os.environ['DOMAIN_NAME']}",
         f"https://*.{os.environ['DOMAIN_NAME']}",
     ]
 
 # the logging system
-
-PACKAGE_LOGING = {
-    "level": "TRACE",
-    "file": "/data/log/debugging.log",
-    "console": True,
-}
+if DEBUG:
+    PACKAGE_LOGING = {
+        "level": "TRACE",
+        "file": "/data/log/pack.log",
+        "console": True,
+    }
+else:
+    PACKAGE_LOGING = {
+        "level": "INFO",
+        "file": "/data/log/pack.log",
+        "console": True,
+    }
 # Application definition
 
 INSTALLED_APPS = [
@@ -130,7 +161,7 @@ USE_TZ = True
 
 # Les static
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [SITE_DIR / "data" / "static"]
+STATIC_ROOT = SITE_DIR / "data" / "static"
 
 # Les medias
 MEDIA_URL = "/media/"
