@@ -2,7 +2,7 @@
 
 Simple repository server for the DepManager tool.
 
-This server aim to host all the packages built for [DepManager](https://github.com/Silmaen/DepManager).
+This server aims to host all the packages built for [DepManager](https://github.com/Silmaen/DepManager).
 
 ## Docker
 
@@ -17,7 +17,7 @@ Most parts of the work reside in a docker image can can simply be deployed.
 It is possible to use the server directly in Docker compose:
 
 ```yaml
-version: 3.8
+---
 services:
   depmanager-server:
     image: registry.argawaen.net/argawaen/depmanager-server
@@ -38,7 +38,18 @@ networks:
     name: proxyed_servers
 ```
 
-## Variables details
+## Automated docker-compose in the source
+
+A new approach is to use the `docker-compose.yml` file provided in the sources of this project.
+You can use it to build the image and run the server in a single command:
+
+```bash
+./docker-compose-up.sh
+```
+
+To have a fine setup of environment variables, you can simply create of edit the `.env` file in the root of the project.
+
+## Variable details
 
 ### TZ
 
@@ -55,7 +66,7 @@ as owner.
 ### DOMAIN_NAME
 
 The domain of this server. This parameter is mandatory because used in CSRF resolution of POST REQUESTS.
-By default: '127.0.0.1' and 'localhost' are used. It is also important to add the port if not using
+By default, '127.0.0.1' and 'localhost' are used. It is also important to add the port if not using
 standard http or https ports in request.
 
 If you can access to this server by the url `http://10.15.165.12:7856`
@@ -68,7 +79,7 @@ If you can access to this server by the url
 ### ADMIN_NAME, ADMIN_PASSWD
 
 Define the first admin user login and password. If an admin user already
-exists in the database these parameters are ignored. The only purpose is
+exists in the database, these parameters are ignored. The only purpose is
 to have an admin defined at the first run of a fresh new instance with no
 data.
 
@@ -79,7 +90,7 @@ admin password!
 
 ## Content and capabilities
 
-This server will provide both link to depmanager client as a remote and a web-based
+This server will provide both links to depmanager client as a remote and a web-based
 UI to manage the content of the repository.
 
 ### General purpose capabilities
@@ -95,6 +106,6 @@ through the server.
 
 ### UI capabilities
 
-UI can manager users, set database options, location of file of the repository.
+UI can manager users, set database options, location of a file in the repository.
 
 It can also browse through the packages in the server.

@@ -1,6 +1,7 @@
 """
 Fichier définissant les urls
 """
+
 from django.conf import settings as main_settings
 from django.conf.urls.static import static
 from django.urls import path
@@ -18,4 +19,5 @@ urlpatterns = [
     path("api", api),
     path("admin_db", admin_db, name="admin_db"),
     path("db_repair", db_repair, name="db_repair"),
+    path("repo_clone", repo_clone, name="clone_repository"),
 ] + static(main_settings.MEDIA_URL, document_root=main_settings.MEDIA_ROOT)
