@@ -10,7 +10,7 @@ This server aims to host all the packages built for [DepManager](https://github.
 
 Most parts of the work reside in a docker image can can simply be deployed.
 
-`docker pull registry.argawaen.net/depmanager-server`
+`docker pull registry.argawaen.net/servers/depmanager-server`
 
 ### Docker compose
 
@@ -20,7 +20,7 @@ It is possible to use the server directly in Docker compose:
 ---
 services:
   depmanager-server:
-    image: registry.argawaen.net/argawaen/depmanager-server
+    image: registry.argawaen.net/servers/depmanager-server
     container_name: depmanager-image
   volume:
     - /srv/data/depman:/data       # Persistent volume for package storage, logs, internal database.
