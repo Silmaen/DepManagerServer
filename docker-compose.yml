@@ -1,0 +1,17 @@
+---
+services:
+  ui:
+    build: .
+    ports:
+      - "8123:80"
+    environment:
+      - TZ:${TZ:-"Europe/Paris"}            # The time zone to use in the container.
+      - PUID:${PUID:-1000}                    # UID used for file writing.
+      - PGID:${PGID:-1000}
+      - DEBUG=${DEBUG:-false}
+      - GIT_HASH=${GIT_HASH:-unknown}
+      - DOMAIN_NAME=${DOMAIN_NAME:-example.com}
+      - ADMIN_NAME=${ADMIN_NAME:-admin}
+      - ADMIN_PASSWD=${ADMIN_PASSWD:-admin}
+    volumes:
+      - ./sample_data:/data/

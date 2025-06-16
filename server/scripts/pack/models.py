@@ -1,6 +1,7 @@
 """
 Package models.
 """
+
 from datetime import datetime
 from pathlib import Path
 
@@ -21,7 +22,7 @@ class PackageEntry(models.Model):
     OsType = (("l", "Linux"), ("w", "Windows"), ("a", "any"))
     ArchType = (("x", "x86_64"), ("a", "aarch64"), ("y", "any"))
     KindType = (("r", "shared"), ("t", "static"), ("h", "header"), ("a", "any"))
-    CompilerType = (("g", "gnu-like"), ("m", "msvc-like"), ("a", "any"))
+    AbiType = (("g", "gnu-like"), ("l", "llvm"), ("m", "msvc-like"), ("a", "any"))
 
     name = models.CharField(max_length=60, verbose_name="Package's Name.")
     version = models.CharField(max_length=25, verbose_name="Package's Version.")
@@ -37,8 +38,8 @@ class PackageEntry(models.Model):
     kind = models.CharField(
         max_length=1, choices=KindType, verbose_name="Package's kind."
     )
-    compiler = models.CharField(
-        max_length=1, choices=CompilerType, verbose_name="Package's compiler type."
+    abi = models.CharField(
+        max_length=1, choices=AbiType, verbose_name="Package's abi type.", default="g"
     )
     build_date = models.DateTimeField(
         default=old_date,
@@ -83,12 +84,22 @@ class PackageEntry(models.Model):
         from fnmatch import translate
         from re import compile
 
-        for attr in ["name", "version", "os", "arch", "kind", "compiler", "glibc"]:
-            if attr == "kind" and (
-                match_to[attr] == "any" or getattr(self, attr) == "any"
-            ):
-                continue
-            if not compile(translate(match_to[attr])).match(getattr(self, attr)):
+        for attr in ["name", "version", "os", "arch", "kind", "abi", "glibc"]:
+            object_attr = getattr(self, attr)
+            if self.name == "fmt":
+                logger.debug(f"Matching {attr}: '{object_attr}' vs. '{match_to[attr]}'")
+            if attr in ["os", "arch", "kind", "abi"]:
+                if match_to[attr] == "any" or object_attr == "any":
+                    # if any, skip the check
+                    continue
+                if len(match_to[attr]) == 1:
+                    if match_to[attr] == "*":
+                        # if match_to[attr] is "*", skip the check
+                        continue
+                    if match_to[attr] != object_attr:
+                        return False
+                    continue
+            if not compile(translate(match_to[attr])).match(object_attr):
                 return False
         return True
 
@@ -98,8 +109,8 @@ class PackageEntry(models.Model):
         :return:
         """
         if self.glibc == "":
-            return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}]"
-        return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_compiler_display()}, {self.glibc}]"
+            return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_abi_display()}]"
+        return f"{self.name}/{self.version} ({self.build_date.isoformat()}) [{self.get_arch_display()}, {self.get_kind_display()}, {self.get_os_display()}, {self.get_abi_display()}, {self.glibc}]"
 
     def get_pretty_size_display(self):
         """
@@ -116,6 +127,40 @@ class PackageEntry(models.Model):
         return f"{raw_size:.2f} {unite}"
 
 
+def convert_filter(get_filter: dict):
+    """
+    Convert the filter to a proper format.
+    :param get_filter:
+    :return:
+    """
+    true_filter = {
+        "name": "*",
+        "version": "*",
+        "os": "*",
+        "arch": "*",
+        "kind": "*",
+        "abi": "*",
+        "glibc": "*",
+    }
+    if "compiler" in get_filter:
+        get_filter["abi"] = get_filter["compiler"]
+    for key in ["name", "version", "glibc"]:
+        if key in get_filter:
+            if get_filter[key] not in [None, ""]:
+                true_filter[key] = get_filter[key]
+    for key in ["glibc", "os", "arch", "abi"]:
+        if key in get_filter and get_filter[key] not in [None, "", "any"]:
+            true_filter[key] = get_filter[key][0].lower()
+    if "kind" in get_filter and get_filter["kind"] not in [None, "", "any"]:
+        if get_filter["kind"] == "shared":
+            true_filter["kind"] = "r"
+        elif get_filter["kind"] == "static":
+            true_filter["kind"] = "t"
+        elif get_filter["kind"] == "header":
+            true_filter["kind"] = "h"
+    return true_filter
+
+
 def safe_create(data: dict, file: Path):
     """
 
@@ -130,7 +175,7 @@ def safe_create(data: dict, file: Path):
         "os",
         "arch",
         "kind",
-        "compiler",
+        "abi",
         "glibc",
         "build_date",
     ]:
@@ -187,18 +232,18 @@ def safe_create(data: dict, file: Path):
         is_ok = False
     #
     key_ok = False
-    loc_compiler = data["compiler"]
-    for key, val in PackageEntry.CompilerType:
-        if loc_compiler == key:
+    loc_abi = data["abi"]
+    for key, val in PackageEntry.AbiType:
+        if loc_abi == key:
             key_ok = True
             break
-        if loc_compiler.lower() == val.split("-")[0]:
-            loc_compiler = key
+        if loc_abi.lower() == val.split("-")[0]:
+            loc_abi = key
             key_ok = True
             break
     if not key_ok:
         logger.warning(
-            f"Cannot create entry: bad COMPILER key {loc_compiler} vs. {PackageEntry.CompilerType}."
+            f"Cannot create entry: bad ABI key {loc_abi} vs. {PackageEntry.AbiType}."
         )
         is_ok = False
     #
@@ -209,7 +254,7 @@ def safe_create(data: dict, file: Path):
             os=loc_os,
             arch=loc_arch,
             kind=loc_kind,
-            compiler=loc_compiler,
+            abi=loc_abi,
             glibc=data["glibc"],
             build_date=data["build_date"],
             package=str(file),
@@ -236,20 +281,8 @@ def get_namelist(get_filter: dict):
     :param get_filter:
     :return:
     """
-    true_filter = {
-        "name": "*",
-        "version": "*",
-        "os": "*",
-        "arch": "*",
-        "kind": "*",
-        "compiler": "*",
-        "glibc": "*",
-    }
-
-    for key in true_filter.keys():
-        if key in get_filter:
-            if get_filter[key] not in [None, "", "any"]:
-                true_filter[key] = get_filter[key]
+    true_filter = convert_filter(get_filter)
+    logger.debug("true_filter: {}".format(true_filter))
     query = PackageEntry.objects.all()
     name_list = []
     for q in query:
@@ -257,6 +290,7 @@ def get_namelist(get_filter: dict):
             continue
         name_list.append(q.name)
     name_list = list(set(name_list))
+    logger.debug(f"name_list: {name_list}")
     name_list.sort()
     return name_list
 
@@ -296,7 +330,7 @@ def sort_a(infos):
     return s_infos
 
 
-def get_package_detail(name: str):
+def get_package_detail(name: str, get_filter: dict = {}):
     """
 
     :param name:
@@ -306,8 +340,11 @@ def get_package_detail(name: str):
         "name": name,
         "versions": {},
     }
+    true_filter = convert_filter(get_filter)
     query = PackageEntry.objects.filter(name=name)
     for q in query:
+        if not q.match(true_filter):
+            continue
         if q.build_date is None:
             q.build_date = old_date
             q.save()
@@ -315,7 +352,7 @@ def get_package_detail(name: str):
             "os": q.get_os_display(),
             "arch": q.get_arch_display(),
             "kind": q.get_kind_display(),
-            "compiler": q.get_compiler_display(),
+            "abi": q.get_abi_display(),
             "glibc": q.glibc,
             "build_date": q.build_date,
             "package": q.package,
@@ -337,7 +374,7 @@ def get_package_list(get_filter):
     names = get_namelist(get_filter)
     result = []
     for name in names:
-        result.append(get_package_detail(name))
+        result.append(get_package_detail(name, get_filter))
     return result
 
 
@@ -347,15 +384,7 @@ def get_packages_urls(get_filter: dict):
     :param get_filter:
     :return:
     """
-    true_filter = {
-        "name": "*",
-        "version": "*",
-        "os": "*",
-        "arch": "*",
-        "kind": "*",
-        "compiler": "*",
-        "glibc": "*",
-    }
+    true_filter = convert_filter(get_filter)
     for key in true_filter.keys():
         if key in get_filter:
             if get_filter[key] not in [None, "", "any"]:
@@ -375,15 +404,7 @@ def delete_packages(delete_filter: dict):
     :param delete_filter:
     :return:
     """
-    true_filter = {
-        "name": "*",
-        "version": "*",
-        "os": "*",
-        "arch": "*",
-        "kind": "*",
-        "compiler": "*",
-        "glibc": "*",
-    }
+    true_filter = convert_filter(delete_filter)
     for key in true_filter.keys():
         if key in delete_filter:
             if delete_filter[key] not in [None, "", "any"]:
