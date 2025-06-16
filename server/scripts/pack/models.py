@@ -86,8 +86,6 @@ class PackageEntry(models.Model):
 
         for attr in ["name", "version", "os", "arch", "kind", "abi", "glibc"]:
             object_attr = getattr(self, attr)
-            if self.name == "fmt":
-                logger.debug(f"Matching {attr}: '{object_attr}' vs. '{match_to[attr]}'")
             if attr in ["os", "arch", "kind", "abi"]:
                 if match_to[attr] == "any" or object_attr == "any":
                     # if any, skip the check
@@ -282,7 +280,6 @@ def get_namelist(get_filter: dict):
     :return:
     """
     true_filter = convert_filter(get_filter)
-    logger.debug("true_filter: {}".format(true_filter))
     query = PackageEntry.objects.all()
     name_list = []
     for q in query:
@@ -290,7 +287,6 @@ def get_namelist(get_filter: dict):
             continue
         name_list.append(q.name)
     name_list = list(set(name_list))
-    logger.debug(f"name_list: {name_list}")
     name_list.sort()
     return name_list
 
