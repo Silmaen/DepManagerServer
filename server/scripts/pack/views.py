@@ -69,7 +69,6 @@ def packages(request):
         "kind": ["any", "static", "shared", "header"],
         "abi": ["any", "gnu", "llvm", "msvc"],
     }
-    logger.debug(f"temp_filter: {temp_filter}")
     i_packages = get_package_list(temp_filter)
     return render(
         request,
