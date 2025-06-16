@@ -7,7 +7,7 @@ if [[ "${branch}" != "main" || "$(git status -s)" != "" ]]; then
   version="${version}-dev"
 fi
 registry="registry.argawaen.net"
-image_name="argawaen/depmanager-server"
+image_name="servers/depmanager-server"
 tag="${version}-${rev}"
 image="${registry}/${image_name}:${tag}"
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )

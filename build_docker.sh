@@ -10,7 +10,7 @@ rev=$(git rev-parse --short HEAD)
 echo "${version}" > server/VERSION
 echo "${rev}" >> server/VERSION
 registry="registry.argawaen.net"
-image_name="argawaen/depmanager-server"
+image_name="servers/depmanager-server"
 tag="${version}-${rev}"
 
 echo "Creating image: ${registry}/${image_name}:${tag}"
