@@ -1,21 +1,34 @@
 {% extends 'base.html' %}
 
 {% block extra_head %}
-<meta http-equiv="refresh" content="30">
+    <meta http-equiv="refresh" content="30">
 {% endblock %}
 
 {% block content %}
-<div class="Article">
-    <div class="ArticleHeader">
-        <h3>Database under maintenance.</h3>
-    </div>
-    <div class="ArticleContent">
-        <div class="MaintenanceLine">
-            <div class="loader"></div>
-            <div class="MaintenanceItems"> Please wait. Database maintenance in progress. This operation can be long.
-                Don't turn off the server.
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-wrench"></i> Maintenance en cours</h3>
+        </div>
+        <div class="ArticleContent">
+            <div class="maintenance-container">
+                <div class="maintenance-icon">
+                    <div class="loader"></div>
+                </div>
+                <div class="maintenance-message">
+                    <h4>Base de données en maintenance</h4>
+                    <p>Veuillez patienter. Une opération de maintenance est en cours sur la base de données.</p>
+                    <p class="maintenance-warning">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Cette opération peut prendre plusieurs minutes. Ne pas éteindre le serveur.
+                    </p>
+                </div>
             </div>
         </div>
+        <div class="ArticleFooter">
+            <p class="text-muted">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Cette page se rafraîchit automatiquement toutes les 30 secondes
+            </p>
+        </div>
     </div>
-</div>
 {% endblock %}

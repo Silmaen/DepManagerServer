@@ -7,70 +7,106 @@
 {% endblock %}
 
 {% block content %}
-    <div class="ArticleContent">
-        <form method="post">
-            {% csrf_token %}
-            <table class="title_tab centering-row">
-                <tr>
-                    <td>name</td>
-                    <td>version</td>
-                    {% for key in filter_possible.keys %}
-                        <td>{{ key }}</td>
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-box"></i> Packages</h3>
+        </div>
+        <div class="ArticleContent">
+            <form method="post" class="package-filter-form">
+                {% csrf_token %}
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-tag"></i> Nom</label>
+                        <input type="search" name="name" id="name" value="{{ filter.name }}"
+                               placeholder="Rechercher un package...">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-code-branch"></i> Version</label>
+                        <input type="search" name="version" id="version" value="{{ filter.version }}"
+                               placeholder="Version...">
+                    </div>
+                    {% for key, possible in filter_possible.items %}
+                        <div class="form-group">
+                            <label><i class="fa-solid fa-filter"></i> {{ key|title }}</label>
+                            <select name="{{ key }}" id="{{ key }}">
+                                {% for option in possible %}
+                                    <option value="{{ option }}"
+                                            {% if filter|get_item:key == option %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     {% endfor %}
-                    <td></td>
-                </tr>
-                <tr>
-                    <td><input type=search name="name" id="name" value="{{ filter.name }}"></td>
-                    <td><input type=search name="version" id="version" value="{{ filter.version }}"></td>
-                    {% for key,possible in filter_possible.items %}
-                        <td><select name="{{ key }}" id="{{ key }}">
-                            {% for option in possible %}
-                                <option value="{{ option }}"
-                                        {% if filter|get_item:key == option %}selected{% endif %}>{{ option }}</option>
-                            {% endfor %}
-                        </select>
-                        </td>
-                    {% endfor %}
-                    <td>
-                        <button id="filter" class="button-icon"><span
-                                class="material-symbols-outlined">filter_alt</span>
-                        </button>
-                    </td>
-                </tr>
-            </table>
-        </form>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn">
+                        <i class="fa-solid fa-filter"></i>
+                        Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="PackageList">
+
+    <div class="packages-grid">
         {% for pack in package %}
-            <div class="Package folding_box" id="{{ pack.name }}">
-                <div class="PackageHeader folding_box_header" onclick="toggleContent('{{ pack.name }}')">
-                    <div class="PackageName">{{ pack.name }}</div>
-                    <a href="{% url 'detail_package' pack.name %}" class="button-icon last-button">
-                        <span class="material-symbols-outlined">info</span>
+            <div class="package-card folding_box" id="{{ pack.name }}">
+                <div class="package-card-header folding_box_header"
+                     onclick="toggleContent('{{ pack.name }}')">
+                    <div class="package-name">
+                        <i class="fa-solid fa-cube"></i>
+                        {{ pack.name }}
+                    </div>
+                    <a href="{% url 'detail_package' pack.name %}"
+                       class="btn-icon"
+                       onclick="event.stopPropagation();"
+                       title="Voir les détails">
+                        <i class="fa-solid fa-circle-info"></i>
                     </a>
                 </div>
-                <div class="folding_box_content">
+                <div class="package-card-content folding_box_content">
                     {% for version, flavors in pack.versions.items %}
-                        <div class="Package folding_box" id="{{ pack.name }}_{{ version }}">
-                            <div class="PackageVersion folding_box_header version-row"
+                        <div class="package-version-box folding_box"
+                             id="{{ pack.name }}_{{ version }}">
+                            <div class="package-version-header folding_box_header"
                                  onclick="toggleContent('{{ pack.name }}_{{ version }}')">
-                                <span class="version-left">
+                                <span class="version-badge">
+                                    <i class="fa-solid fa-tag"></i>
                                     {{ version }}
                                 </span>
-                                <span class="version-right">
+                                <span class="version-date">
+                                    <i class="fa-solid fa-calendar"></i>
                                     {% with latest=flavors|dictsortreversed:"build_date"|first %}
-                                        {{ latest.build_date }}
+                                        {{ latest.build_date|date:"d/m/Y" }}
                                     {% endwith %}
                                 </span>
                             </div>
-                            <div class="PackageFlavors folding_box_content">
+                            <div class="package-flavors folding_box_content">
                                 {% for flavor in flavors %}
-                                    <div class="PackageFlavor">
-                                        <span>{{ flavor.os }}</span>
-                                        <span>{{ flavor.arch }}</span>
-                                        <span>{{ flavor.kind }}</span>
-                                        <span>{{ flavor.abi }}</span>
-                                        <span>{{ flavor.glibc }}</span>
+                                    <div class="flavor-item">
+                                        <span class="flavor-badge">
+                                            <i class="fa-brands fa-{{ flavor.os }}"></i>
+                                            {{ flavor.os }}
+                                        </span>
+                                        <span class="flavor-badge">
+                                            <i class="fa-solid fa-microchip"></i>
+                                            {{ flavor.arch }}
+                                        </span>
+                                        <span class="flavor-badge">
+                                            <i class="fa-solid fa-cube"></i>
+                                            {{ flavor.kind }}
+                                        </span>
+                                        <span class="flavor-badge">
+                                            <i class="fa-solid fa-code"></i>
+                                            {{ flavor.abi }}
+                                        </span>
+                                        {% if flavor.glibc %}
+                                            <span class="flavor-badge">
+                                                <i class="fa-solid fa-book"></i>
+                                                {{ flavor.glibc }}
+                                            </span>
+                                        {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -78,9 +114,17 @@
                     {% endfor %}
                 </div>
             </div>
+        {% empty %}
+            <div class="Article">
+                <div class="ArticleContent">
+                    <div class="empty-state">
+                        <i class="fa-solid fa-box-open"></i>
+                        <p>Aucun package ne correspond aux critères de recherche</p>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
     </div>
-    {{ debug | safe }}
 {% endblock %}
 
 {% block script_content %}

@@ -21,5 +21,6 @@ COPY entrypoint.py /entrypoint.py
 RUN chmod +x /entrypoint.py
 
 COPY ./server ./server
+COPY VERSION ./server/VERSION
 
 ENTRYPOINT ["/entrypoint.py"]

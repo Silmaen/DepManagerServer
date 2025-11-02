@@ -1,36 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="Article">
-    <div class="ArticleHeader">
-        <h3>Database cleaning.</h3>
-    </div>
-    <div class="ArticleContent">
-        <div class="Actions">
-            <a href="{% url 'db_repair' %}" class="ActionsItems button-icon danger">
-                <span class="material-symbols-outlined">sanitizer</span>
-            </a>
-            <div class="ActionsItems">Clean Database (This operation can be very long
-                as all the archive content will be examined. During this operation, all
-                database access will be denied.)
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-broom"></i> Nettoyage de la base de données</h3>
+        </div>
+        <div class="ArticleContent">
+            <div class="action-card">
+                <div class="action-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <p>Cette opération peut être longue car tout le contenu des archives sera examiné.
+                        Durant cette opération, tous les accès à la base de données seront refusés.</p>
+                </div>
+                <a href="{% url 'db_repair' %}" class="btn btn-danger">
+                    <i class="fa-solid fa-broom"></i>
+                    Nettoyer la base
+                </a>
             </div>
         </div>
     </div>
-</div>
-<div class="Article">
-    <div class="ArticleHeader">
-        <h3>Database import.</h3>
-    </div>
-    <div class="ArticleContent">
-        <div class="Actions">
-            <form method="post" action="{% url 'clone_repository' %}">
+
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-download"></i> Import de base de données</h3>
+        </div>
+        <div class="ArticleContent">
+            <form method="post" action="{% url 'clone_repository' %}" class="action-card import-form">
                 {% csrf_token %}
-                <input type="url" name="url" placeholder="Repository URL" required>
-                <input type="text" name="login" placeholder="Login" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" class="button-icon">clone from other repository</button>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="url"><i class="fa-solid fa-link"></i> URL du dépôt</label>
+                        <input type="url" name="url" id="url" placeholder="https://..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login"><i class="fa-solid fa-user"></i> Identifiant</label>
+                        <input type="text" name="login" id="login" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password"><i class="fa-solid fa-key"></i> Mot de passe</label>
+                        <input type="password" name="password" id="password" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-download"></i>
+                    Cloner le dépôt
+                </button>
             </form>
         </div>
     </div>
-</div>
 {% endblock %}

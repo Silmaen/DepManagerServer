@@ -2,92 +2,88 @@
 {% load static %}
 <html lang="fr">
 <head>
-    <title>Dependency Registry Browser</title>
+    <title>Dependency Registry Browser - {{ title }}</title>
     <meta charset="UTF-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="robots" content="index,follow">
     <meta name="author" content="Argawaen">
     <meta name="description" content="le contenu">
     <meta name="keywords" content="FUCK!!">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static 'favicon.ico' %}"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100" rel="stylesheet"/>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/content.css' %}"/>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/components.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/folding_box.css' %}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     {% block extra_head %}
     {% endblock %}
 </head>
 <body>
 <header class="header">
-    <div class="navbar container">
-        <A href="/" class="site-title">
+    <nav class="navbar">
+        <a href="/" class="site-title">
             <img src="{% static 'img/logo.png' %}" alt="Logo">
-            <H1>Dependency Registry Browser</H1>
-        </A>
-        <div class="site-user">
+            <h1>Dependency Registry Browser</h1>
+        </a>
+
+        {% if perms.pack.view_packageentry %}
+            <ul class="nav-menu">
+                <li class="nav-item {% if page == 'packages' %}current{% endif %}">
+                    <a href="{% url 'package' %}">Packages</a>
+                </li>
+                {% if perms.auth.view_user %}
+                    <li class="nav-item {% if page == 'users' %}current{% endif %}">
+                        <a href="{% url 'users' %}">Users</a>
+                    </li>
+                {% endif %}
+                {% if perms.pack.delete_packageentry %}
+                    <li class="nav-item {% if page == 'admin' %}current{% endif %}">
+                        <a href="{% url 'admin_db' %}">Admin</a>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
+        <div class="flex items-center gap-sm">
             {% if user.is_authenticated %}
-                <a class="button" href="{% url 'profile' %}">
-                    <span class="material-symbols-outlined">person</span>
+                <a class="btn btn-icon" href="{% url 'profile' %}">
+                    <i class="fa-solid fa-user"></i>
                     {{ user.username }}
-                </a>:
-                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                </a>
+                <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="button">
-                        <span class="material-symbols-outlined">logout</span>
-                        Logout
+                    <button type="submit" class="btn btn-icon">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </form>
             {% else %}
-                <a class="button" href="{% url 'login' %}">
-                    <span class="material-symbols-outlined">login</span>
-                    login
+                <a class="btn" href="{% url 'login' %}">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Login
                 </a>
             {% endif %}
         </div>
-        <nav class="site-nav">
-            <ul class="navmenu">
-                {% if perms.pack.view_packageentry %}
-                    <li class="navitem {% if page == 'packages' %}current{% endif %}"><A
-                            href="{% url 'package' %}">Packages</A></li>
-                    {% if perms.auth.view_user %}
-                        <li class="navitem {% if page == 'users' %}current{% endif %}"><A
-                                href="{% url 'users' %}">Users</A>
-                        </li>
-                    {% endif %}
-                    {% if perms.pack.delete_packageentry %}
-                        <li class="navitem {% if page == 'admin' %}current{% endif %}"><A href="{% url 'admin_db' %}">Admin</A>
-                        </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
-    <div class="page-title">
-        <H1>{{ title }}</H1>
-    </div>
+    </nav>
 </header>
-<div class="content">
-    {% block content %}
-        je suis le centre.
-    {% endblock %}
-</div>
+
+<main class="content">
+    {% block content %}{% endblock %}
+</main>
+
 <footer class="footer">
     <p>
-        <a href="https://github.com/Silmaen/DepManagerServer">
-            <img src="{% static 'img/logo.png' %}" alt="Logo">
-            Package Registry Browser
-        </a>
-        {% if version %}
-            · Version: {{ version.number }} ({{ version.hash }})
-        {% endif %}
+        <a href="https://github.com/Silmaen/DepManagerServer"><i class="fa-brands fa-github"></i>
+            Package Registry Browser</a>
+        {% if version %}· Version: {{ version.number }} ({{ version.hash }}){% endif %}
     </p>
-    <p>
-        © Designed by Argawaen, all rights reserved. The site design, the logo are trademarks and/or registered
-        trademarks of Argawaen.
-    </p>
+    <p>© Designed by Argawaen.</p>
 
 </footer>
-{% block script_content %}
-{% endblock %}
+
+{% block script_content %}{% endblock %}
 </body>
 </html>

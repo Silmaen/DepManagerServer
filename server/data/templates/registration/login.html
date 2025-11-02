@@ -1,31 +1,61 @@
 {% extends 'registration/base_registration.html' %}
 
-{%block mainsection %}
-<div class="Article user_form">
-    <div class="ArticleHeader">
-        <h4>Login</h4>
-    </div>
-    <div class="ArticleContent centering-col">
-        <p>Please login to access the content</p>
-        <form class="centering-col" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button id="submit" class="button"><span class="material-symbols-outlined">login</span>Login</button>
-        </form>
-        <div class="centering-row">
-            <p >Lost credentials?</p>
-            <a class="button" href="{% url 'password_reset' %}"><span class="material-symbols-outlined">lock_reset</span>Reset</a>
+{% block mainsection %}
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-right-to-bracket"></i> Connexion</h3>
         </div>
-        <div class="centering-row">
-            <p>Request credentials?</p>
-            <a class="button" href="{% url 'register' %}"><span class="material-symbols-outlined">person_add</span>Register</a>
+        <div class="ArticleContent">
+            <div class="login-form">
+                <p class="form-description">Veuillez vous connecter pour accéder au contenu</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">
+                            <i class="fa-solid fa-user"></i>
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="form-error">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.password.id_for_label }}">
+                            <i class="fa-solid fa-lock"></i>
+                            {{ form.password.label }}
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="form-error">{{ form.password.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% if form.non_field_errors %}
+                        <div class="form-error">{{ form.non_field_errors }}</div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                        Se connecter
+                    </button>
+                </form>
+
+                <div class="login-links">
+                    <a class="btn" href="{% url 'password_reset' %}">
+                        <i class="fa-solid fa-lock-open"></i>
+                        Mot de passe oublié ?
+                    </a>
+                    <a class="btn" href="{% url 'register' %}">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Créer un compte
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="ArticleFooter">
+            <a class="btn" href="{% url 'index' %}">
+                <i class="fa-solid fa-circle-arrow-left"></i>
+                Retour
+            </a>
         </div>
     </div>
-    <div class="ArticleFooter">
-    <a class="button" href="{% url 'index' %}">
-        <span class="material-symbols-outlined">arrow_circle_left</span>
-        Back
-    </a>
-    </div>
-</div>
 {% endblock %}
