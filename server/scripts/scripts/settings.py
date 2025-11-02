@@ -32,6 +32,8 @@ if "DEBUG" in os.environ:
 else:
     DEBUG = True
 
+DATA_DIR = "/app/data"
+
 if (SITE_DIR / "VERSION").exists():
     with open(SITE_DIR / "VERSION") as fp:
         lines = fp.readlines()
@@ -62,15 +64,49 @@ if "DOMAIN_NAME" in os.environ:
 if DEBUG:
     PACKAGE_LOGING = {
         "level": "TRACE",
-        "file": "/data/log/pack.log",
+        "file": DATA_DIR + "/log/pack.log",
         "console": True,
     }
 else:
     PACKAGE_LOGING = {
         "level": "INFO",
-        "file": "/data/log/pack.log",
+        "file": DATA_DIR + "/log/pack.log",
         "console": True,
     }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": f"{DATA_DIR}/log/django.log",
+            "formatter": "verbose",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "INFO" if DEBUG else "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -120,10 +156,10 @@ WSGI_APPLICATION = "scripts.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "/data/packages.db",
+        "NAME": DATA_DIR + "/packages.db",
     }
 }
-DATABASES_LOCK_PATH = "/data/packages.lock"
+DATABASES_LOCK_PATH = DATA_DIR + "/packages.lock"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -148,7 +184,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "fr"
 
-TIME_ZONE = "CET"
+TIME_ZONE = os.environ.get("TZ")
 
 USE_I18N = True
 
@@ -165,7 +201,7 @@ STATIC_ROOT = SITE_DIR / "data" / "static"
 
 # Les medias
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/data"
+MEDIA_ROOT = DATA_DIR
 
 # Login redirection
 LOGIN_REDIRECT_URL = "/"

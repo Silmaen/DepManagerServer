@@ -4,18 +4,20 @@ Main entry point for the docker image
 """
 import os
 import shutil
+import time
 from pathlib import Path
 from sys import stderr
 
-server_path = Path("/server")
+server_path = Path("/app/server")
 server_config = server_path / "config"
-server_data = Path("/data")
+server_data = Path("/app/data")
 server_migrations = server_data / "migrations"
 packages_dir = server_data / "packages"
 server_data_upload = server_data / "_upload"
 server_scripts = server_path / "scripts"
 script_migrations = server_scripts / "pack" / "migrations"
 server_log = server_data / "log"
+server_static = server_data / "data" / "static"
 fallback_run = False
 
 config = {
@@ -160,6 +162,7 @@ def correct_permission():
             server_data,
             server_log,
             packages_dir,
+            server_static,
         ]
         for i in range(10):
             folder_list.append(server_data_upload / str(i))
@@ -245,15 +248,11 @@ def fall_back():
     if fallback_run:
         return
     fallback_run = True
-    shell = Path("/bin/bash")
-    if not shell.exists():
-        shell = Path("/bin/sh")
     try:
-        print(f"Executing {shell}.")
-        exec_cmd(str(shell), True)
-    except Exception as err:
-        print(f"ERROR Executing shell fallback : {err}.", file=stderr)
-    fallback_run = False
+        while True:
+            time.sleep(3600)  # Dormir par intervalles d'une heure
+    except KeyboardInterrupt:
+        print("Container stopped by user.")
     print("End of fallback :( .")
 
 
@@ -305,7 +304,7 @@ def check_admin_user():
         print("Check if an admin user already exists.")
         import sqlite3
 
-        con = sqlite3.connect("/data/packages.db")
+        con = sqlite3.connect("/app/data/packages.db")
         cur = con.cursor()
         res = cur.execute("SELECT * FROM auth_user WHERE is_superuser=1")
         ls_admin = res.fetchall()
@@ -366,7 +365,8 @@ def start_server():
     print("Starting server")
     os.chdir(server_scripts)
     print("Starting Nginx:")
-    if not exec_cmd("/usr/sbin/nginx -c /server/config/nginx.conf", True):
+    if not exec_cmd("/usr/sbin/nginx -c /app/server/config/nginx.conf", True):
+        print("ERROR: unable to start Nginx.", file=stderr)
         fall_back()
     print("Starting Gunicorn:")
     os.chdir(server_scripts)
@@ -381,7 +381,7 @@ def start_server():
         + " --workers=3"
         + " --threads=2"
         + " --log-level info"
-        + " --log-file /data/log/gunicorn.log"
+        + " --log-file /app/data/log/gunicorn.log"
     )
     if not exec_cmd(cmd, True):
         return False

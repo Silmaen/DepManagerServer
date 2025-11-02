@@ -9,6 +9,7 @@ from django.db import models
 from django.utils import timezone
 
 from pack.logger import logger
+from scripts.settings import MEDIA_ROOT
 
 old_date = datetime.fromisoformat("2000-01-01T00:00:00+0000")
 
@@ -54,6 +55,27 @@ class PackageEntry(models.Model):
         """
 
         verbose_name = "C++ Package repository item"
+
+    def check_file(self):
+        """
+        Check if the file is relative to MEDIA_ROOT, and correct if not.
+        """
+        file_path = str(self.package)
+
+        # Si le chemin commence par /data/ au lieu de /app/data/
+        if file_path.startswith("/data/"):
+            # Convertir en chemin relatif
+            relative_path = file_path.replace("/data/", "")
+            self.package = relative_path
+            self.save(update_fields=["package"])
+            logger.info(f"Corrected path from {file_path} to {relative_path}")
+
+        # Si le chemin est absolu et commence par MEDIA_ROOT
+        elif file_path.startswith(MEDIA_ROOT):
+            relative_path = file_path.replace(MEDIA_ROOT + "/", "")
+            self.package = relative_path
+            self.save(update_fields=["package"])
+            logger.info(f"Corrected absolute path to relative: {relative_path}")
 
     def save(self, *args, **kwargs):
         """
@@ -341,6 +363,7 @@ def get_package_detail(name: str, get_filter: dict = {}):
     for q in query:
         if not q.match(true_filter):
             continue
+        q.check_file()
         if q.build_date is None:
             q.build_date = old_date
             q.save()
@@ -390,6 +413,7 @@ def get_packages_urls(get_filter: dict):
     for q in query:
         if not q.match(true_filter):
             continue
+        q.check_file()
         url_list.append(q.package)
     return url_list
 
@@ -410,6 +434,7 @@ def delete_packages(delete_filter: dict):
     for q in query:
         if not q.match(true_filter):
             continue
+        q.check_file()
         count += 1
         q.delete()
     return count

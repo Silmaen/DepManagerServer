@@ -1,22 +1,25 @@
-FROM alpine:3.21
+FROM python:3.12-alpine
+
+WORKDIR /app
 
 # environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONOPTIMIZE=1
 
-# Ports
-EXPOSE 80
+COPY requirements.txt .
+RUN apk add --no-cache \
+    nginx-mod-http-upload \
+    nginx-mod-stream \
+    nginx-mod-http-upload-progress \
+    nginx-mod-http-encrypted-session \
+    tzdata \
+    && pip install --no-cache-dir -r requirements.txt
 
-# copy the data
-COPY bootstrap /bootstrap
-COPY server /server
+# Ajouter le script d'initialisation et le rendre exécutable
+COPY entrypoint.py /entrypoint.py
+RUN chmod +x /entrypoint.py
 
-# Entry point
-ENTRYPOINT ["/bootstrap/start.py"]
+COPY ./server ./server
 
-# Volumes
-VOLUME ["/data"]
-
-# Run installation script
-RUN /bin/sh /bootstrap/install.sh
+ENTRYPOINT ["/entrypoint.py"]

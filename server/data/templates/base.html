@@ -30,10 +30,13 @@
                     <span class="material-symbols-outlined">person</span>
                     {{ user.username }}
                 </a>:
-                <a class="button" href="{% url 'logout' %}">
-                    <span class="material-symbols-outlined">logout</span>
-                    Logout
-                </a>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="button">
+                        <span class="material-symbols-outlined">logout</span>
+                        Logout
+                    </button>
+                </form>
             {% else %}
                 <a class="button" href="{% url 'login' %}">
                     <span class="material-symbols-outlined">login</span>
