@@ -359,7 +359,7 @@ def api(request):
                     return HttpResponse(f"""ERROR No matching package.""", status=406)
                 resp = ""
                 for pack in package:
-                    pack_u = f"{pack}".replace("/data/", "/media/")
+                    pack_u = f"{pack}".replace(MEDIA_ROOT, "/media/")
                     if not pack_u.startswith("/media/"):
                         pack_u = f"/media/{pack_u}"
                     resp += f"{pack_u}\n"

@@ -4,8 +4,11 @@ services:
     build: .
     ports:
       - "8123:80"
+    env_file:
+      - .env
+    restart: unless-stopped
     environment:
-      - TZ:${TZ:-"Europe/Paris"}            # The time zone to use in the container.
+      - TZ:${TZ:-Europe/Paris}            # The time zone to use in the container.
       - PUID:${PUID:-1000}                    # UID used for file writing.
       - PGID:${PGID:-1000}
       - DEBUG=${DEBUG:-false}
@@ -14,4 +17,4 @@ services:
       - ADMIN_NAME=${ADMIN_NAME:-admin}
       - ADMIN_PASSWD=${ADMIN_PASSWD:-admin}
     volumes:
-      - ./sample_data:/data/
+      - ./data:/app/data

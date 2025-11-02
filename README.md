@@ -23,7 +23,7 @@ services:
     image: registry.argawaen.net/servers/depmanager-server
     container_name: depmanager-image
   volume:
-    - /srv/data/depman:/data       # Persistent volume for package storage, logs, internal database.
+    - /srv/data/depman:/app/data       # Persistent volume for package storage, logs, internal database.
   ports:
     - 80:80                        # Port of the web UI.
   environment:
@@ -118,9 +118,10 @@ It can also browse through the packages in the server.
         - [ ] Search packages
     - [ ] API improvements
         - [ ] search packages
-- v0.3.1 (in progress)
-    - [ ] Bug fixes
-- v0.3.0 (17-06-2025)
+- v1.3.1 (in progress)
+    - [X] Support for YAML file as package definition
+    - [X] Modernize the docker image backend
+- v1.3.0 (17-06-2025)
     - [X] User management
         - [x] list users
         - [x] create user
