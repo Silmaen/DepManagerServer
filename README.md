@@ -109,3 +109,25 @@ through the server.
 UI can manager users, set database options, location of a file in the repository.
 
 It can also browse through the packages in the server.
+
+## Roadmap
+-
+
+- v0.4.0 (in progress)
+    - [ ] UI improvements
+        - [ ] Search packages
+    - [ ] API improvements
+        - [ ] search packages
+- v0.3.1 (in progress)
+    - [ ] Bug fixes
+- v0.3.0 (17-06-2025)
+    - [X] User management
+        - [x] list users
+        - [x] create user
+        - [x] delete user
+        - [x] change user password
+    - [x] Basic server with package upload/download
+    - [x] User management
+    - [x] Package management in the UI
+        - [x] list packages
+        - [x] delete packages
