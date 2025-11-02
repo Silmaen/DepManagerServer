@@ -21,8 +21,8 @@ def get_file_infos(file: Path):
         logger.warning(f"Non-archive file in package dir: {file.name}")
         return {}
     with tarfile.open(file, "r:gz") as archive:
+        logger.info(f"getting info for archive: {archive.name}")
         try:
-            infos = archive.extractfile("./edp.info")
             data = {
                 "name": "",
                 "version": "",
@@ -32,29 +32,49 @@ def get_file_infos(file: Path):
                 "abi": "",
                 "glibc": "",
                 "build_date": old_date,
+                "dependencies": [],
             }
-            content = infos.read().decode("utf-8")
-            # for line in infos.readlines():
-            #    line = line.decode("utf-8")
-            for line in content.splitlines(keepends=False):
-                if "#" in line:
-                    line = line.split("#")[0].strip()
-                if "=" not in line:
-                    continue
-                key, val = [it.strip() for it in line.split("=", 1)]
-                if key == "compiler":
-                    key = "abi"  # we use abi instead of compiler
-                if key in data.keys():
-                    if key == "build_date":
-                        if "+" not in val:
-                            val += "+0000"
-                        data[key] = datetime.fromisoformat(val)
+            # test if info.yaml is present
+            if "./info.yaml" in archive.getnames():
+                logger.info(f"Archive has new format info.yaml.")
+                infos = archive.extractfile("./info.yaml")
+                import yaml
+
+                with open(infos, "r") as infos_file:
+                    content = yaml.safe_load(infos)
+                    for key in data.keys():
+                        if key in content.keys():
+                            if key == "build_date":
+                                if "+" not in content[key]:
+                                    content[key] += "+0000"
+                                data[key] = datetime.fromisoformat(content[key])
+                                continue
+                            data[key] = content[key]
+            else:
+                logger.warn("Archive has old format info.")
+                infos = archive.extractfile("./edp.info")
+                content = infos.read().decode("utf-8")
+                # for line in infos.readlines():
+                #    line = line.decode("utf-8")
+                for line in content.splitlines(keepends=False):
+                    if "#" in line:
+                        line = line.split("#")[0].strip()
+                    if "=" not in line:
                         continue
-                    data[key] = val
+                    key, val = [it.strip() for it in line.split("=", 1)]
+                    if key == "compiler":
+                        key = "abi"  # we use abi instead of compiler
+                    if key in data.keys():
+                        if key == "build_date":
+                            if "+" not in val:
+                                val += "+0000"
+                            data[key] = datetime.fromisoformat(val)
+                            continue
+                        data[key] = val
             return data
         except KeyError:
             logger.warning(
-                f"Archive file {file.name} does not seems to have edp.info file"
+                f"Archive file {file.name} does not seems to have informations file"
             )
     return {}
 
@@ -141,9 +161,6 @@ def long_repair(do_correct: bool = False, skip_large_files: bool = True):
                 if file_error_count == file_error_corrected:
                     total_error_corrected += 1
             else:
-                # logger.trace(
-                #    f"{counter:08d} file: {file.name} is correct with database ({datetime.now() - f_time_file} / {f_time_info})."
-                # )
                 pass
         #
         # SECOND PASS: check database entries
