@@ -1,66 +1,97 @@
 {% extends 'registration/base_registration.html' %}
-{%block mainsection %}
-<div class="Article user_form">
-    <div class="ArticleHeader">
-        <h4 class="centering"><span class="material-symbols-outlined">account_circle</span>{{ user }}</h4>
+
+{% block mainsection %}
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-circle-user"></i> Profil utilisateur</h3>
+        </div>
+        <div class="ArticleContent">
+            <div class="profile-info">
+                <div class="profile-section">
+                    <h4><i class="fa-solid fa-id-card"></i> Informations personnelles</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label><i class="fa-solid fa-circle-user"></i> Username</label>
+                            <span>{{ user.username }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label><i class="fa-solid fa-user"></i> Prénom</label>
+                            <span>{{ user.first_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label><i class="fa-solid fa-users"></i> Nom de famille</label>
+                            <span>{{ user.last_name }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label><i class="fa-solid fa-envelope"></i> Courriel</label>
+                            <span>{{ user.email }}</span>
+                        </div>
+                        <div class="info-item">
+                            <label><i class="fa-solid fa-clock-rotate-left"></i> Dernière connexion</label>
+                            <span>{{ user.last_login }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h4><i class="fa-solid fa-shield-halved"></i> Permissions</h4>
+                    <div class="permissions-grid">
+                        <div class="permission-group">
+                            <label><i class="fa-solid fa-box"></i> Package</label>
+                            <div class="permission-icons">
+                                {% if perms.pack.view_packageentry %}
+                                    <i class="fa-solid fa-eye perm" title="Voir les packages"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-eye-slash noperm" title="Pas d'accès aux packages"></i>
+                                {% endif %}
+                                {% if perms.pack.add_packageentry %}
+                                    <i class="fa-solid fa-file-arrow-up perm" title="Ajouter des packages"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-file-arrow-up noperm" title="Pas d'ajout de packages"></i>
+                                {% endif %}
+                                {% if perms.pack.delete_packageentry %}
+                                    <i class="fa-solid fa-ban perm" title="Supprimer des packages"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-ban noperm" title="Pas de suppression de packages"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="permission-group">
+                            <label><i class="fa-solid fa-user"></i> User</label>
+                            <div class="permission-icons">
+                                {% if perms.auth.view_user %}
+                                    <i class="fa-solid fa-eye perm" title="Voir les utilisateurs"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-eye-slash noperm" title="Pas d'accès aux utilisateurs"></i>
+                                {% endif %}
+                                {% if perms.auth.delete_user %}
+                                    <i class="fa-solid fa-pen-to-square perm" title="Éditer les utilisateurs"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-pen-to-square noperm"
+                                       title="Pas d'édition des utilisateurs"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <a class="btn btn-primary" href="{% url 'password' %}">
+                        <i class="fa-solid fa-key"></i>
+                        Changer le mot de passe
+                    </a>
+                    <a class="btn btn-primary" href="{% url 'profile_edit' %}">
+                        <i class="fa-solid fa-user-pen"></i>
+                        Éditer le profil
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="ArticleFooter">
+            <a class="btn" href="{% url 'index' %}">
+                <i class="fa-solid fa-circle-arrow-left"></i>
+                Retour
+            </a>
+        </div>
     </div>
-    <div class="ArticleContent user_form">
-        <p>Voici les informations de profils vous concernant</p>
-        <table class="centering-row">
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">account_circle</span> Username:
-                </td>
-                <td>{{user.username}}</td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">person</span> Prénom:</td>
-                <td>{{user.first_name}}</td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">group</span> Nom de famille:</td>
-                <td>{{user.last_name}}</td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">mail</span> Courriel:</td>
-                <td>{{user.email}}</td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">history</span> dernière
-                    connexion:
-                </td>
-                <td>{{user.last_login}}</td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">package</span>Package</td>
-                <td>
-                    {% if perms.pack.view_packageentry %}<span class="material-symbols-outlined">visibility</span>
-                    {% else %}<span class="material-symbols-outlined">visibility_off</span>{% endif %}
-                    {% if perms.pack.add_packageentry %}<span class="material-symbols-outlined">file_upload</span>
-                    {% else %}<span class="material-symbols-outlined">file_upload_off</span>{% endif %}
-                    {% if perms.pack.delete_packageentry %}<span class="material-symbols-outlined">do_not_disturb</span>
-                    {% else %}<span class="material-symbols-outlined">do_not_disturb_off</span>{% endif %}
-                </td>
-            </tr>
-            <tr>
-                <td class="centering-row-left"><span class="material-symbols-outlined">person</span>User</td>
-                <td>
-                    {% if perms.auth.view_user %}<span class="material-symbols-outlined">visibility</span>
-                    {% else %}<span class="material-symbols-outlined">visibility_off</span>{% endif %}
-                    {% if perms.auth.delete_user %}<span class="material-symbols-outlined">edit</span>
-                    {% else %}<span class="material-symbols-outlined">edit_off</span>{% endif %}
-                </td>
-            </tr>
-        </table>
-        <a class="button" href="{% url 'password' %}"><span class="material-symbols-outlined">password</span>Changer
-            passwd</a>
-        <a class="button" href="{% url 'profile_edit' %}"><span class="material-symbols-outlined">manage_accounts</span>Éditer
-            le profil</a>
-    </div>
-    <div class="ArticleFooter">
-        <a class="button" href="{% url 'index' %}">
-            <span class="material-symbols-outlined">arrow_circle_left</span>
-            Retour
-        </a>
-    </div>
-</div>
 {% endblock %}

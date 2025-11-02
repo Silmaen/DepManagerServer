@@ -1,37 +1,50 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<div class="Article">
-    <div class="ArticleHeader">
-        {% if perms.pack.view_packageentry %}
-        <h3>Summary</h3>
-        {% else %}
-        <h3>Please Wait</h3>
-        {% endif %}
-    </div>
-    <div class="ArticleContent">
-        {% if perms.pack.view_packageentry %}
-        <table>
-            <tr>
-                <td>Number of different packages:</td>
-                <td>{{ pack_number }}</td>
-            </tr>
-        </table>
-        {% else %}
-        <p>Your request to access the database is currently under examination.</p>
-        <p>Please wait, take a coffee and rest.</p>
-        <p>If you were once able to connect your permissions seems to have been revoked. Contact your administrator.</p>
-        {% endif %}
-    </div>
-</div>
-{% else %}
-<div class="Article">
-    <p>Login required...</p>
-    <a class="button" href="{% url 'login' %}">
-        <span class="material-symbols-outlined">login</span>
-        Login
-    </a>
-</div>
-{% endif %}
+    {% if user.is_authenticated %}
+        <div class="Article">
+            <div class="ArticleHeader">
+                {% if perms.pack.view_packageentry %}
+                    <h3><i class="fa-solid fa-chart-simple"></i> Résumé</h3>
+                {% else %}
+                    <h3><i class="fa-solid fa-hourglass-half"></i> Veuillez patienter</h3>
+                {% endif %}
+            </div>
+            <div class="ArticleContent">
+                {% if perms.pack.view_packageentry %}
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <i class="fa-solid fa-box"></i>
+                            <div class="stat-content">
+                                <span class="stat-value">{{ pack_number }}</span>
+                                <span class="stat-label">Packages disponibles</span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="info-box">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <div>
+                            <p>Votre demande d'accès à la base de données est en cours d'examen.</p>
+                            <p>Si vous aviez précédemment accès, vos permissions ont peut-être été révoquées. Contactez
+                                votre administrateur.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="Article">
+            <div class="ArticleHeader">
+                <h3><i class="fa-solid fa-lock"></i> Authentification requise</h3>
+            </div>
+            <div class="ArticleContent centering-col">
+                <p>Veuillez vous connecter pour accéder au contenu.</p>
+                <a class="btn btn-primary" href="{% url 'login' %}">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Se connecter
+                </a>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

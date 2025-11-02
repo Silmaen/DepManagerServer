@@ -1,114 +1,131 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="ArticleContent">
-    <table class="user-tab">
-        <thead>
-        <tr>
-            <th>name</th>
-            <th>last connexion</th>
-            <th class="center-content">can view package</th>
-            <th class="center-content">can add package</th>
-            <th class="center-content">can delete package</th>
-            <th class="center-content">can view user</th>
-            <th class="center-content">can delete users</th>
-            <th class="center-content"></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for user_for in users %}
-        <tr>
-            <td>{{ user_for.name }}</td>
-            <td>{{ user_for.last_conn }}</td>
-            {% if user_for.admin or not perms.auth.delete_user %}
-            <td class="center-content">{% if user_for.can_view_pack %}<span class="material-symbols-outlined perm">visibility</span>
-                {% else %}<span class="material-symbols-outlined noperm">visibility_off</span>{% endif %}
-            </td>
-            <td class="center-content">{% if user_for.can_add_pack %}<span class="material-symbols-outlined perm">file_upload</span>
-                {% else %}<span class="material-symbols-outlined noperm">file_upload_off</span>{% endif %}
-            </td>
-            <td class="center-content">{% if user_for.can_delete_pack %}<span class="material-symbols-outlined perm">do_not_disturb</span>
-                {% else %}<span class="material-symbols-outlined noperm">do_not_disturb_off</span>{% endif %}
-            </td>
-            <td class="center-content">{% if user_for.can_view_user %}<span class="material-symbols-outlined perm">visibility</span>
-                {% else %}<span class="material-symbols-outlined noperm">visibility_off</span>{% endif %}
-            </td>
-            <td class="center-content">{% if user_for.can_delete_user %}<span
-                    class="material-symbols-outlined perm">edit</span>
-                {% else %}<span class="material-symbols-outlined noperm">edit_off</span>{% endif %}
-            </td>
-            {% else %}
-            <td class="center-content">
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="toggle_pack_view" name="action"/>
-                    <button type="submit">
-                        {% if user_for.can_view_pack %}<span class="material-symbols-outlined perm">visibility</span>
-                        {% else %}<span class="material-symbols-outlined noperm">visibility_off</span>{% endif %}
-                    </button>
-                </form>
-
-            </td>
-            <td class="center-content">
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="toggle_pack_add" name="action"/>
-                    <button type="submit">
-                        {% if user_for.can_add_pack %}<span class="material-symbols-outlined perm">file_upload</span>
-                        {% else %}<span class="material-symbols-outlined noperm">file_upload_off</span>{% endif %}
-                    </button>
-                </form>
-
-            </td>
-            <td class="center-content">
-
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="toggle_pack_delete" name="action"/>
-                    <button type="submit">
-                        {% if user_for.can_delete_pack %}<span
-                            class="material-symbols-outlined perm">do_not_disturb</span>
-                        {% else %}<span class="material-symbols-outlined noperm">do_not_disturb_off</span>{% endif %}
-                    </button>
-                </form>
-
-            </td>
-            <td class="center-content">
-
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="toggle_user_view" name="action"/>
-                    <button type="submit">
-                        {% if user_for.can_view_user %}<span class="material-symbols-outlined perm">visibility</span>
-                        {% else %}<span class="material-symbols-outlined noperm">visibility_off</span>{% endif %}
-                    </button>
-                </form>
-
-            </td>
-            <td class="center-content">
-
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="toggle_user_delete" name="action"/>
-                    <button type="submit">
-                        {% if user_for.can_delete_user %}<span class="material-symbols-outlined perm">edit</span>
-                        {% else %}<span class="material-symbols-outlined noperm">edit_off</span>{% endif %}
-                    </button>
-                </form>
-
-            </td>
-            <td>
-                <form method="post" action="{% url 'modif_user' user_for.pk %}">
-                    {% csrf_token %}
-                    <input type="hidden" value="delete" name="action"/>
-                    <button type="submit" class="button-icon danger"><span
-                            class="material-symbols-outlined">delete</span></button>
-                </form>
-            </td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <div class="Article">
+        <div class="ArticleHeader">
+            <h3><i class="fa-solid fa-users"></i> Gestion des utilisateurs</h3>
+        </div>
+        <div class="ArticleContent">
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th><i class="fa-solid fa-clock-rotate-left"></i> Dernière connexion</th>
+                        <th class="text-center"><i class="fa-solid fa-eye"></i> Voir packages</th>
+                        <th class="text-center"><i class="fa-solid fa-file-arrow-up"></i> Ajouter packages</th>
+                        <th class="text-center"><i class="fa-solid fa-ban"></i> Supprimer packages</th>
+                        <th class="text-center"><i class="fa-solid fa-users-viewfinder"></i> Voir users</th>
+                        <th class="text-center"><i class="fa-solid fa-user-pen"></i> Éditer users</th>
+                        {% if perms.auth.delete_user %}
+                            <th class="text-center"><i class="fa-solid fa-trash"></i></th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user_for in users %}
+                        <tr>
+                            <td class="user-name">{{ user_for.name }}</td>
+                            <td>{{ user_for.last_conn|date:"d/m/Y H:i" }}</td>
+                            <td class="text-center perm-cell">
+                                {% if perms.auth.delete_user %}
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_pack_view">
+                                        <button type="submit"
+                                                class="btn-perm {% if user_for.can_view_pack %}active{% endif %}"
+                                                title="Toggle voir packages">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <i class="fa-solid fa-{% if user_for.can_view_pack %}eye perm{% else %}eye-slash noperm{% endif %}"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center perm-cell">
+                                {% if perms.auth.delete_user %}
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_pack_add">
+                                        <button type="submit"
+                                                class="btn-perm {% if user_for.can_add_pack %}active{% endif %}"
+                                                title="Toggle ajouter packages">
+                                            <i class="fa-solid fa-file-arrow-up"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <i class="fa-solid fa-file-arrow-up {% if user_for.can_add_pack %}perm{% else %}noperm{% endif %}"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center perm-cell">
+                                {% if perms.auth.delete_user %}
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_pack_delete">
+                                        <button type="submit"
+                                                class="btn-perm {% if user_for.can_delete_pack %}active{% endif %}"
+                                                title="Toggle supprimer packages">
+                                            <i class="fa-solid fa-ban"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <i class="fa-solid fa-ban {% if user_for.can_delete_pack %}perm{% else %}noperm{% endif %}"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center perm-cell">
+                                {% if perms.auth.delete_user %}
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_user_view">
+                                        <button type="submit"
+                                                class="btn-perm {% if user_for.can_view_user %}active{% endif %}"
+                                                title="Toggle voir users">
+                                            <i class="fa-solid fa-users-viewfinder"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <i class="fa-solid fa-{% if user_for.can_view_user %}eye perm{% else %}eye-slash noperm{% endif %}"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center perm-cell">
+                                {% if perms.auth.delete_user %}
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="toggle_user_delete">
+                                        <button type="submit"
+                                                class="btn-perm {% if user_for.can_delete_user %}active{% endif %}"
+                                                title="Toggle éditer users">
+                                            <i class="fa-solid fa-user-pen"></i>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <i class="fa-solid fa-user-pen {% if user_for.can_delete_user %}perm{% else %}noperm{% endif %}"></i>
+                                {% endif %}
+                            </td>
+                            {% if perms.auth.delete_user %}
+                                <td class="text-center">
+                                    <form method="post" action="{% url 'modif_user' user_for.pk %}"
+                                          class="inline-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <button type="submit" class="btn-icon btn-danger"
+                                                title="Supprimer l'utilisateur"
+                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
