@@ -71,8 +71,8 @@ class PackageEntry(models.Model):
             logger.info(f"Corrected path from {file_path} to {relative_path}")
 
         # Si le chemin est absolu et commence par MEDIA_ROOT
-        elif file_path.startswith(MEDIA_ROOT):
-            relative_path = file_path.replace(MEDIA_ROOT + "/", "")
+        elif file_path.startswith(str(MEDIA_ROOT)):
+            relative_path = file_path.replace(str(MEDIA_ROOT) + "/", "")
             self.package = relative_path
             self.save(update_fields=["package"])
             logger.info(f"Corrected absolute path to relative: {relative_path}")

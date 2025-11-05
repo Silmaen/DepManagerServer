@@ -356,11 +356,18 @@ def collect_static():
     return True
 
 
+def compile_messages():
+    print("Compiling message files")
+    if not (exec_cmd("python3 manage.py compilemessages")):
+        print("ERROR: Error compiling message files.", file=stderr)
+        return False
+    return True
+
+
 def start_server():
     """
     Start of the Server
     """
-    import time
 
     print("Starting server")
     os.chdir(server_scripts)
@@ -377,17 +384,25 @@ def start_server():
         "gunicorn scripts.wsgi"
         + " --bind=0.0.0.0:8000"
         + " --reload"
-        + " --daemon"
         + " --workers=3"
         + " --threads=2"
-        + " --log-level info"
-        + " --log-file /app/data/log/gunicorn.log"
+        + " --log-level warning"
+        + " --access-logfile /app/data/log/gunicorn_access.log"
+        + " --error-logfile -"
+        + " --capture-output"
     )
-    if not exec_cmd(cmd, True):
+    try:
+        import subprocess
+
+        os.setgid(group_info["id"])
+        os.setuid(user_info["id"])
+        print(f"Executing: {cmd} as {user_info['name']}:{group_info['name']}")
+        subprocess.run(cmd, shell=True, check=True)
+    except KeyboardInterrupt:
+        print("Container stopped by user.")
+    except Exception as err:
+        print(f"ERROR: exception during server start: {err}.", file=stderr)
         return False
-    print("Server Successfully started")
-    while True:
-        time.sleep(100)  # wait 100 seconds
     return True
 
 
@@ -410,6 +425,9 @@ def main():
             fall_back()
             return
         if not collect_static():
+            fall_back()
+            return
+        if not compile_messages():
             fall_back()
             return
         if not check_admin_user():
