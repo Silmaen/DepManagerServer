@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import logging
 import os
 from pathlib import Path
 
@@ -32,20 +33,26 @@ if "DEBUG" in os.environ:
 else:
     DEBUG = True
 
-DATA_DIR = "/app/data"
+DATA_DIR = Path("/app/data")
+if not DATA_DIR.exists():
+    DATA_DIR = SITE_DIR.parent / "data"
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 if (SITE_DIR / "VERSION").exists():
     with open(SITE_DIR / "VERSION") as fp:
         lines = fp.readlines()
     SITE_VERSION = lines[0].strip()
-    if len(lines) > 1:
-        SITE_HASH = lines[1].strip()
+    SITE_API_VERSION = lines[1].strip()
+    if len(lines) > 2:
+        SITE_HASH = lines[2].strip()
+    else:
+        SITE_HASH = "unknown"
 else:
-    SITE_VERSION = "4.0.0"
+    SITE_VERSION = "666.666.666"
     SITE_HASH = "unknown"
-if "GIT_HASH" in os.environ:
-    SITE_HASH = os.environ["GIT_HASH"]
-SITE_API_VERSION = "2.0.0"
+    if "GIT_HASH" in os.environ:
+        SITE_HASH = os.environ["GIT_HASH"]
+    SITE_API_VERSION = "2.0.0"
 #
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
@@ -60,25 +67,30 @@ if "DOMAIN_NAME" in os.environ:
         f"https://*.{os.environ['DOMAIN_NAME']}",
     ]
 
-# the logging system
-if DEBUG:
-    PACKAGE_LOGING = {
-        "level": "TRACE",
-        "file": DATA_DIR + "/log/pack.log",
-        "console": True,
-    }
-else:
-    PACKAGE_LOGING = {
-        "level": "INFO",
-        "file": DATA_DIR + "/log/pack.log",
-        "console": True,
-    }
+
+class LowercaseLevelNameFormatter(logging.Formatter):
+    """
+    Custom formatter that displays log level names in lowercase.
+    """
+
+    def format(self, record):
+        record.levelname = record.levelname.lower()
+        return super().format(record)
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": "{levelname} {asctime} {module} {message}",
+            "()": "scripts.settings.LowercaseLevelNameFormatter",
+            "format": "{asctime} [{levelname}] {message}",
+            "datefmt": "%Y/%m/%d %H:%M:%S",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{asctime} [{levelname}] {message}",
+            "datefmt": "%Y/%m/%d %H:%M:%S",
             "style": "{",
         },
     },
@@ -86,19 +98,29 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
+            "level": "DEBUG",
+            "stream": "ext://sys.stdout",
         },
         "file": {
             "class": "logging.FileHandler",
-            "filename": f"{DATA_DIR}/log/django.log",
+            "filename": DATA_DIR / "log" / "pack.log",
             "formatter": "verbose",
+            "encoding": "utf-8",
+            "level": "DEBUG",
         },
     },
     "root": {
-        "handlers": ["console", "file"],
-        "level": "INFO" if DEBUG else "WARNING",
+        "handlers": ["console"],
+        "level": "WARNING",
+        "propagate": False,
     },
     "loggers": {
         "django": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "pack": {
             "handlers": ["console", "file"],
             "level": "DEBUG" if DEBUG else "INFO",
             "propagate": False,
@@ -128,6 +150,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "scripts.urls"
@@ -156,10 +179,10 @@ WSGI_APPLICATION = "scripts.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": DATA_DIR + "/packages.db",
+        "NAME": DATA_DIR / "packages.db",
     }
 }
-DATABASES_LOCK_PATH = DATA_DIR + "/packages.lock"
+DATABASES_LOCK_PATH = DATA_DIR / "packages.lock"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -182,7 +205,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "fr"
+LANGUAGE_CODE = os.environ.get("LANG_CODE", "en-us")
+
+LANGUAGES = [
+    ("fr", "Français"),
+    ("en", "English"),
+]
+LOCALE_PATHS = [
+    SITE_DIR / "locale",
+]
 
 TIME_ZONE = os.environ.get("TZ")
 
