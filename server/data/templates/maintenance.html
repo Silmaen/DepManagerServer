@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block extra_head %}
     <meta http-equiv="refresh" content="30">
@@ -7,7 +8,7 @@
 {% block content %}
     <div class="Article">
         <div class="ArticleHeader">
-            <h3><i class="fa-solid fa-wrench"></i> Maintenance en cours</h3>
+            <h3><i class="fa-solid fa-wrench"></i> {% trans 'Maintenance in progress' %}</h3>
         </div>
         <div class="ArticleContent">
             <div class="maintenance-container">
@@ -15,11 +16,11 @@
                     <div class="loader"></div>
                 </div>
                 <div class="maintenance-message">
-                    <h4>Base de données en maintenance</h4>
-                    <p>Veuillez patienter. Une opération de maintenance est en cours sur la base de données.</p>
+                    <h4>{% trans 'Database under maintenance' %}</h4>
+                    <p>{% trans 'Please wait. A maintenance operation is in progress on the database.' %}</p>
                     <p class="maintenance-warning">
                         <i class="fa-solid fa-triangle-exclamation"></i>
-                        Cette opération peut prendre plusieurs minutes. Ne pas éteindre le serveur.
+                        {% trans 'This operation may take several minutes. Do not shut down the server.' %}
                     </p>
                 </div>
             </div>
@@ -27,7 +28,7 @@
         <div class="ArticleFooter">
             <p class="text-muted">
                 <i class="fa-solid fa-clock-rotate-left"></i>
-                Cette page se rafraîchit automatiquement toutes les 30 secondes
+                {% trans 'This page automatically refreshes every 30 seconds' %}
             </p>
         </div>
     </div>

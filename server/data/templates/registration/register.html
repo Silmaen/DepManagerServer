@@ -1,12 +1,13 @@
-{% extends 'registration/base_registration.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block mainsection %}
+{% block content %}
     <div class="Article user_form">
         <div class="ArticleHeader">
-            <h4>Nouvel utilisateur</h4>
+            <h4>{% trans 'New user' %}</h4>
         </div>
         <div class="ArticleContent user_form">
-            <p>Veuillez remplir ce formulaire afin d’être enregistré comme utilisateur:</p>
+            <p>{% trans 'Please fill out this form to register as a user:' %}</p>
             {% if form.errors %}
                 {% for field in form %}
                     {% for error in field.errors %}
@@ -36,20 +37,19 @@
                 {% endfor %}
             {% endif %}
             <form method="post">
-
                 {% csrf_token %}
                 {{ form.as_p }}
                 {{ profile_form.as_p }}
                 <button id="submit" class="button">
                     <i class="fa-solid fa-user-plus"></i>
-                    Register
+                    {% trans 'Register' %}
                 </button>
             </form>
         </div>
-        <div class=" ArticleFooter">
+        <div class="ArticleFooter">
             <a class="button" href="{% url 'login' %}">
                 <i class="fa-solid fa-circle-arrow-left"></i>
-                Retour
+                {% trans 'Back' %}
             </a>
         </div>
     </div>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load dict_extras %}
 
@@ -9,21 +10,21 @@
 {% block content %}
     <div class="Article">
         <div class="ArticleHeader">
-            <h3><i class="fa-solid fa-box"></i> Packages</h3>
+            <h3><i class="fa-solid fa-box"></i> {% trans 'Packages' %}</h3>
         </div>
         <div class="ArticleContent">
             <form method="post" class="package-filter-form">
                 {% csrf_token %}
                 <div class="filter-grid">
                     <div class="form-group">
-                        <label><i class="fa-solid fa-tag"></i> Nom</label>
+                        <label><i class="fa-solid fa-tag"></i> {% trans 'Name' %}</label>
                         <input type="search" name="name" id="name" value="{{ filter.name }}"
-                               placeholder="Rechercher un package...">
+                               placeholder="{% trans 'Search for a package...' %}">
                     </div>
                     <div class="form-group">
-                        <label><i class="fa-solid fa-code-branch"></i> Version</label>
+                        <label><i class="fa-solid fa-code-branch"></i> {% trans 'Version' %}</label>
                         <input type="search" name="version" id="version" value="{{ filter.version }}"
-                               placeholder="Version...">
+                               placeholder="{% trans 'Version...' %}">
                     </div>
                     {% for key, possible in filter_possible.items %}
                         <div class="form-group">
@@ -42,7 +43,7 @@
                 <div class="filter-actions">
                     <button type="submit" class="btn">
                         <i class="fa-solid fa-filter"></i>
-                        Filtrer
+                        {% trans 'Filter' %}
                     </button>
                 </div>
             </form>
@@ -61,7 +62,7 @@
                     <a href="{% url 'detail_package' pack.name %}"
                        class="btn-icon"
                        onclick="event.stopPropagation();"
-                       title="Voir les détails">
+                       title="{% trans 'View details' %}">
                         <i class="fa-solid fa-circle-info"></i>
                     </a>
                 </div>
@@ -119,7 +120,7 @@
                 <div class="ArticleContent">
                     <div class="empty-state">
                         <i class="fa-solid fa-box-open"></i>
-                        <p>Aucun package ne correspond aux critères de recherche</p>
+                        <p>{% trans 'No packages match the search criteria' %}</p>
                     </div>
                 </div>
             </div>

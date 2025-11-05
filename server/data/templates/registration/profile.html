@@ -1,74 +1,76 @@
-{% extends 'registration/base_registration.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block mainsection %}
+{% block content %}
     <div class="Article">
         <div class="ArticleHeader">
-            <h3><i class="fa-solid fa-circle-user"></i> Profil utilisateur</h3>
+            <h3><i class="fa-solid fa-circle-user"></i> {% trans 'User profile' %}</h3>
         </div>
         <div class="ArticleContent">
             <div class="profile-info">
                 <div class="profile-section">
-                    <h4><i class="fa-solid fa-id-card"></i> Informations personnelles</h4>
+                    <h4><i class="fa-solid fa-id-card"></i> {% trans 'Personal information' %}</h4>
                     <div class="info-grid">
                         <div class="info-item">
-                            <label><i class="fa-solid fa-circle-user"></i> Username</label>
+                            <label><i class="fa-solid fa-circle-user"></i> {% trans 'Username' %}</label>
                             <span>{{ user.username }}</span>
                         </div>
                         <div class="info-item">
-                            <label><i class="fa-solid fa-user"></i> Prénom</label>
+                            <label><i class="fa-solid fa-user"></i> {% trans 'First name' %}</label>
                             <span>{{ user.first_name }}</span>
                         </div>
                         <div class="info-item">
-                            <label><i class="fa-solid fa-users"></i> Nom de famille</label>
+                            <label><i class="fa-solid fa-users"></i> {% trans 'Last name' %}</label>
                             <span>{{ user.last_name }}</span>
                         </div>
                         <div class="info-item">
-                            <label><i class="fa-solid fa-envelope"></i> Courriel</label>
+                            <label><i class="fa-solid fa-envelope"></i> {% trans 'Email' %}</label>
                             <span>{{ user.email }}</span>
                         </div>
                         <div class="info-item">
-                            <label><i class="fa-solid fa-clock-rotate-left"></i> Dernière connexion</label>
+                            <label><i class="fa-solid fa-clock-rotate-left"></i> {% trans 'Last login' %}</label>
                             <span>{{ user.last_login }}</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="profile-section">
-                    <h4><i class="fa-solid fa-shield-halved"></i> Permissions</h4>
+                    <h4><i class="fa-solid fa-shield-halved"></i> {% trans 'Permissions' %}</h4>
                     <div class="permissions-grid">
                         <div class="permission-group">
-                            <label><i class="fa-solid fa-box"></i> Package</label>
+                            <label><i class="fa-solid fa-box"></i> {% trans 'Package' %}</label>
                             <div class="permission-icons">
                                 {% if perms.pack.view_packageentry %}
-                                    <i class="fa-solid fa-eye perm" title="Voir les packages"></i>
+                                    <i class="fa-solid fa-eye perm" title="{% trans 'View packages' %}"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-eye-slash noperm" title="Pas d'accès aux packages"></i>
+                                    <i class="fa-solid fa-eye-slash noperm" title="{% trans 'No package access' %}"></i>
                                 {% endif %}
                                 {% if perms.pack.add_packageentry %}
-                                    <i class="fa-solid fa-file-arrow-up perm" title="Ajouter des packages"></i>
+                                    <i class="fa-solid fa-file-arrow-up perm" title="{% trans 'Add packages' %}"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-file-arrow-up noperm" title="Pas d'ajout de packages"></i>
+                                    <i class="fa-solid fa-file-arrow-up noperm"
+                                       title="{% trans 'No package addition' %}"></i>
                                 {% endif %}
                                 {% if perms.pack.delete_packageentry %}
-                                    <i class="fa-solid fa-ban perm" title="Supprimer des packages"></i>
+                                    <i class="fa-solid fa-ban perm" title="{% trans 'Delete packages' %}"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-ban noperm" title="Pas de suppression de packages"></i>
+                                    <i class="fa-solid fa-ban noperm" title="{% trans 'No package deletion' %}"></i>
                                 {% endif %}
                             </div>
                         </div>
                         <div class="permission-group">
-                            <label><i class="fa-solid fa-user"></i> User</label>
+                            <label><i class="fa-solid fa-user"></i> {% trans 'User' %}</label>
                             <div class="permission-icons">
                                 {% if perms.auth.view_user %}
-                                    <i class="fa-solid fa-eye perm" title="Voir les utilisateurs"></i>
+                                    <i class="fa-solid fa-eye perm" title="{% trans 'View users' %}"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-eye-slash noperm" title="Pas d'accès aux utilisateurs"></i>
+                                    <i class="fa-solid fa-eye-slash noperm" title="{% trans 'No user access' %}"></i>
                                 {% endif %}
                                 {% if perms.auth.delete_user %}
-                                    <i class="fa-solid fa-pen-to-square perm" title="Éditer les utilisateurs"></i>
+                                    <i class="fa-solid fa-pen-to-square perm" title="{% trans 'Edit users' %}"></i>
                                 {% else %}
                                     <i class="fa-solid fa-pen-to-square noperm"
-                                       title="Pas d'édition des utilisateurs"></i>
+                                       title="{% trans 'No user editing' %}"></i>
                                 {% endif %}
                             </div>
                         </div>
@@ -78,11 +80,11 @@
                 <div class="profile-actions">
                     <a class="btn btn-primary" href="{% url 'password' %}">
                         <i class="fa-solid fa-key"></i>
-                        Changer le mot de passe
+                        {% trans 'Change password' %}
                     </a>
                     <a class="btn btn-primary" href="{% url 'profile_edit' %}">
                         <i class="fa-solid fa-user-pen"></i>
-                        Éditer le profil
+                        {% trans 'Edit profile' %}
                     </a>
                 </div>
             </div>
@@ -90,7 +92,7 @@
         <div class="ArticleFooter">
             <a class="btn" href="{% url 'index' %}">
                 <i class="fa-solid fa-circle-arrow-left"></i>
-                Retour
+                {% trans 'Back' %}
             </a>
         </div>
     </div>

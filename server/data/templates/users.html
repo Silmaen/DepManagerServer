@@ -1,23 +1,26 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
     <div class="Article">
         <div class="ArticleHeader">
-            <h3><i class="fa-solid fa-users"></i> Gestion des utilisateurs</h3>
+            <h3><i class="fa-solid fa-users"></i> {% trans 'User management' %}</h3>
         </div>
         <div class="ArticleContent">
             <div class="users-table-container">
                 <table class="users-table">
                     <thead>
                     <tr>
-                        <th>Nom</th>
-                        <th><i class="fa-solid fa-clock-rotate-left"></i> Dernière connexion</th>
-                        <th class="text-center"><i class="fa-solid fa-eye"></i> Voir packages</th>
-                        <th class="text-center"><i class="fa-solid fa-file-arrow-up"></i> Ajouter packages</th>
-                        <th class="text-center"><i class="fa-solid fa-ban"></i> Supprimer packages</th>
-                        <th class="text-center"><i class="fa-solid fa-users-viewfinder"></i> Voir users</th>
-                        <th class="text-center"><i class="fa-solid fa-user-pen"></i> Éditer users</th>
-                        {% if perms.auth.delete_user %}
+                        <th>{% trans 'Name' %}</th>
+                        <th><i class="fa-solid fa-clock-rotate-left"></i> {% trans 'Last login' %}</th>
+                        <th class="text-center"><i class="fa-solid fa-eye"></i> {% trans 'View packages' %}</th>
+                        <th class="text-center"><i class="fa-solid fa-file-arrow-up"></i> {% trans 'Add packages' %}
+                        </th>
+                        <th class="text-center"><i class="fa-solid fa-ban"></i> {% trans 'Delete packages' %}</th>
+                        <th class="text-center"><i class="fa-solid fa-users-viewfinder"></i> {% trans 'View users' %}
+                        </th>
+                        <th class="text-center"><i class="fa-solid fa-user-pen"></i> {% trans 'Edit users' %}</th>
+                        {% if user_capabilities.can_delete_user %}
                             <th class="text-center"><i class="fa-solid fa-trash"></i></th>
                         {% endif %}
                     </tr>
@@ -28,62 +31,62 @@
                             <td class="user-name">{{ user_for.name }}</td>
                             <td>{{ user_for.last_conn|date:"d/m/Y H:i" }}</td>
                             <td class="text-center perm-cell">
-                                {% if perms.auth.delete_user %}
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_pack_view">
                                         <button type="submit"
-                                                class="btn-perm {% if user_for.can_view_pack %}active{% endif %}"
-                                                title="Toggle voir packages">
+                                                class="btn-perm {% if user_for.can_view_package %}active{% endif %}"
+                                                title="{% trans 'Toggle view packages' %}">
                                             <i class="fa-solid fa-eye"></i>
                                         </button>
                                     </form>
                                 {% else %}
-                                    <i class="fa-solid fa-{% if user_for.can_view_pack %}eye perm{% else %}eye-slash noperm{% endif %}"></i>
+                                    <i class="fa-solid fa-{% if user_for.can_view_package %}eye perm{% else %}eye-slash noperm{% endif %}"></i>
                                 {% endif %}
                             </td>
                             <td class="text-center perm-cell">
-                                {% if perms.auth.delete_user %}
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_pack_add">
                                         <button type="submit"
-                                                class="btn-perm {% if user_for.can_add_pack %}active{% endif %}"
-                                                title="Toggle ajouter packages">
+                                                class="btn-perm {% if user_for.can_add_package %}active{% endif %}"
+                                                title="{% trans 'Toggle add packages' %}">
                                             <i class="fa-solid fa-file-arrow-up"></i>
                                         </button>
                                     </form>
                                 {% else %}
-                                    <i class="fa-solid fa-file-arrow-up {% if user_for.can_add_pack %}perm{% else %}noperm{% endif %}"></i>
+                                    <i class="fa-solid fa-file-arrow-up {% if user_for.can_add_package %}perm{% else %}noperm{% endif %}"></i>
                                 {% endif %}
                             </td>
                             <td class="text-center perm-cell">
-                                {% if perms.auth.delete_user %}
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_pack_delete">
                                         <button type="submit"
-                                                class="btn-perm {% if user_for.can_delete_pack %}active{% endif %}"
-                                                title="Toggle supprimer packages">
+                                                class="btn-perm {% if user_for.can_delete_package %}active{% endif %}"
+                                                title="{% trans 'Toggle delete packages' %}">
                                             <i class="fa-solid fa-ban"></i>
                                         </button>
                                     </form>
                                 {% else %}
-                                    <i class="fa-solid fa-ban {% if user_for.can_delete_pack %}perm{% else %}noperm{% endif %}"></i>
+                                    <i class="fa-solid fa-ban {% if user_for.can_delete_package %}perm{% else %}noperm{% endif %}"></i>
                                 {% endif %}
                             </td>
                             <td class="text-center perm-cell">
-                                {% if perms.auth.delete_user %}
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_user_view">
                                         <button type="submit"
                                                 class="btn-perm {% if user_for.can_view_user %}active{% endif %}"
-                                                title="Toggle voir users">
+                                                title="{% trans 'Toggle view users' %}">
                                             <i class="fa-solid fa-users-viewfinder"></i>
                                         </button>
                                     </form>
@@ -92,14 +95,14 @@
                                 {% endif %}
                             </td>
                             <td class="text-center perm-cell">
-                                {% if perms.auth.delete_user %}
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_user_delete">
                                         <button type="submit"
                                                 class="btn-perm {% if user_for.can_delete_user %}active{% endif %}"
-                                                title="Toggle éditer users">
+                                                title="{% trans 'Toggle edit users' %}">
                                             <i class="fa-solid fa-user-pen"></i>
                                         </button>
                                     </form>
@@ -107,20 +110,20 @@
                                     <i class="fa-solid fa-user-pen {% if user_for.can_delete_user %}perm{% else %}noperm{% endif %}"></i>
                                 {% endif %}
                             </td>
-                            {% if perms.auth.delete_user %}
-                                <td class="text-center">
+                            <td class="text-center">
+                                {% if user_capabilities.can_delete_user and not user_for.is_admin %}
                                     <form method="post" action="{% url 'modif_user' user_for.pk %}"
                                           class="inline-form">
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="delete">
                                         <button type="submit" class="btn-icon btn-danger"
-                                                title="Supprimer l'utilisateur"
-                                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                                                title="{% trans 'Delete user' %}"
+                                                onclick="return confirm('{% trans 'Are you sure you want to delete this user?' %}')">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </form>
-                                </td>
-                            {% endif %}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
