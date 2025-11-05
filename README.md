@@ -19,23 +19,24 @@ It is possible to use the server directly in Docker compose:
 ```yaml
 ---
 services:
-  depmanager-server:
-    image: registry.argawaen.net/servers/depmanager-server
-    container_name: depmanager-image
-  volume:
-    - /srv/data/depman:/app/data       # Persistent volume for package storage, logs, internal database.
-  ports:
-    - 80:80                        # Port of the web UI.
+  ui:
+    build: .
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8123}:80"               # Port mapping for the web UI.
+    volume:
+      - ${DATA_DIR:-./data}:/app/data    # Persistent volume for package storage, logs, internal database.
   environment:
-    - TZ:"Europe/Paris"            # The time zone to use in the container.
-    - PUID:1000                    # UID used for file writing.
-    - PGID:1000                    # GID used for file writing.
-    - DOMAIN_NAME:"example.com"    # The domain of this server (mandatory for correct usage).
-    - ADMIN_NAME:"admin"           # login of the first admin.
-    - ADMIN_PASSWD:"MyBigPassW0rd" # passwd of the first admin.
-networks:
-  default:
-    name: proxyed_servers
+    # Control the container
+    - TZ:${TZ:-Europe/Paris}             # The time zone to use in the container.
+    - PUID:${PUID:-1000}                 # UID used for file writing.
+    - PGID:${PGID:-1000}                 # GID used for file writing.
+    # Server configuration
+    - DOMAIN_NAME:"example.com"          # The domain of this server (mandatory for correct usage).
+    - ADMIN_NAME:"admin"                 # login of the first admin.
+    - ADMIN_PASSWD:"MyBigPassW0rd"       # passwd of the first admin.
 ```
 
 ## Automated docker-compose in the source
@@ -113,7 +114,7 @@ It can also browse through the packages in the server.
 ## Roadmap
 -
 
-- v0.4.0 (in progress)
+- v1.4.0 (future)
     - [ ] UI improvements
         - [ ] Search packages
     - [ ] API improvements
@@ -121,6 +122,8 @@ It can also browse through the packages in the server.
 - v1.3.1 (in progress)
     - [X] Support for YAML file as package definition
     - [X] Modernize the docker image backend
+    - [X] Modernize the web UI
+    - [ ] Fix security issues
 - v1.3.0 (17-06-2025)
     - [X] User management
         - [x] list users

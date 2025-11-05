@@ -1,7 +1,10 @@
 ---
 services:
   ui:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
     ports:
       - "8123:80"
     env_file:

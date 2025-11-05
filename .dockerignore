@@ -1,0 +1,56 @@
+# Data volumes
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+.github
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+*.md
+!requirements.txt
+
+# Tests
+tests/
+pytest_cache/
+.pytest_cache/
+coverage/
+.coverage
+
+# Temporary files
+tmp/
+temp/
+*.tmp
