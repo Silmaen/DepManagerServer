@@ -1,0 +1,505 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-04 22:54+0100\n"
+"PO-Revision-Date: 2025-01-04 12:00+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: French <fr@li.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: server/data/templates/admin.html:7
+msgid "Database cleanup"
+msgstr "Nettoyage de la base de données"
+
+#: server/data/templates/admin.html:13
+msgid ""
+"This operation can be lengthy as all archive contents will be examined. "
+"During this operation, all database access will be denied."
+msgstr ""
+"Cette opération peut être longue car tous les contenus des archives seront "
+"examinés. Pendant cette opération, tous les accès à la base de données "
+"seront refusés."
+
+#: server/data/templates/admin.html:17
+msgid "Clean database"
+msgstr "Nettoyer la base de données"
+
+#: server/data/templates/admin.html:25
+msgid "Database import"
+msgstr "Import de base de données"
+
+#: server/data/templates/admin.html:32
+msgid "Repository URL"
+msgstr "URL du dépôt"
+
+#: server/data/templates/admin.html:36
+#: server/data/templates/registration/profile.html:15
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: server/data/templates/admin.html:40
+msgid "Password"
+msgstr "Mot de passe"
+
+#: server/data/templates/admin.html:46
+msgid "Clone repository"
+msgstr "Cloner le dépôt"
+
+#: server/data/templates/base.html:38 server/data/templates/package.html:13
+msgid "Packages"
+msgstr "Paquets"
+
+#: server/data/templates/base.html:43
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: server/data/templates/base.html:48
+msgid "Admin"
+msgstr "Admin"
+
+#: server/data/templates/base.html:70
+msgid "Go to user profile"
+msgstr "Aller au profil utilisateur"
+
+#: server/data/templates/base.html:76 server/data/templates/base.html:77
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: server/data/templates/base.html:81 server/data/templates/base.html:83
+#: server/data/templates/registration/login.html:7
+#: server/data/templates/registration/password_reset_complete.html:16
+msgid "Login"
+msgstr "Connexion"
+
+#: server/data/templates/base.html:111
+msgid "Designed by"
+msgstr "Conçu par"
+
+#: server/data/templates/index.html:9
+msgid "Summary"
+msgstr "Résumé"
+
+#: server/data/templates/index.html:11
+msgid "Please wait"
+msgstr "Veuillez patienter"
+
+#: server/data/templates/index.html:21
+msgid "Packages available"
+msgstr "Paquets disponibles"
+
+#: server/data/templates/index.html:29
+msgid "Your database access request is under review."
+msgstr "Votre demande d'accès à la base de données est en cours d'examen."
+
+#: server/data/templates/index.html:30
+msgid ""
+"If you previously had access, your permissions may have been revoked. Please "
+"contact your administrator."
+msgstr ""
+"Si vous aviez précédemment accès, vos permissions ont peut-être été "
+"révoquées. Veuillez contacter votre administrateur."
+
+#: server/data/templates/index.html:39
+msgid "Authentication required"
+msgstr "Authentification requise"
+
+#: server/data/templates/index.html:42
+msgid "Please log in to access the content."
+msgstr "Veuillez vous connecter pour accéder au contenu."
+
+#: server/data/templates/index.html:45
+#: server/data/templates/registration/login.html:39
+msgid "Log in"
+msgstr "Se connecter"
+
+#: server/data/templates/maintenance.html:11
+msgid "Maintenance in progress"
+msgstr "Maintenance en cours"
+
+#: server/data/templates/maintenance.html:19
+msgid "Database under maintenance"
+msgstr "Base de données en maintenance"
+
+#: server/data/templates/maintenance.html:20
+msgid "Please wait. A maintenance operation is in progress on the database."
+msgstr ""
+"Veuillez patienter. Une opération de maintenance est en cours sur la base de "
+"données."
+
+#: server/data/templates/maintenance.html:23
+msgid "This operation may take several minutes. Do not shut down the server."
+msgstr ""
+"Cette opération peut prendre plusieurs minutes. N'éteignez pas le serveur."
+
+#: server/data/templates/maintenance.html:31
+msgid "This page automatically refreshes every 30 seconds"
+msgstr "Cette page se rafraîchit automatiquement toutes les 30 secondes"
+
+#: server/data/templates/package.html:20 server/data/templates/users.html:14
+msgid "Name"
+msgstr "Nom"
+
+#: server/data/templates/package.html:22
+msgid "Search for a package..."
+msgstr "Rechercher un paquet..."
+
+#: server/data/templates/package.html:25
+msgid "Version"
+msgstr "Version"
+
+#: server/data/templates/package.html:27
+msgid "Version..."
+msgstr "Version..."
+
+#: server/data/templates/package.html:46
+msgid "Filter"
+msgstr "Filtrer"
+
+#: server/data/templates/package.html:65
+msgid "View details"
+msgstr "Voir les détails"
+
+#: server/data/templates/package.html:123
+msgid "No packages match the search criteria"
+msgstr "Aucun paquet ne correspond aux critères de recherche"
+
+#: server/data/templates/package_detail.html:16
+#: server/data/templates/registration/login.html:58
+#: server/data/templates/registration/password_change_done.html:16
+#: server/data/templates/registration/password_change_form.html:45
+#: server/data/templates/registration/password_reset_confirm.html:38
+#: server/data/templates/registration/password_reset_done.html:17
+#: server/data/templates/registration/password_reset_form.html:24
+#: server/data/templates/registration/profile.html:95
+#: server/data/templates/registration/profile_change.html:51
+#: server/data/templates/registration/register.html:52
+msgid "Back"
+msgstr "Retour"
+
+#: server/data/templates/package_detail.html:72
+msgid "Delete this flavor"
+msgstr "Supprimer cette variante"
+
+#: server/data/templates/package_detail.html:73
+msgid "Are you sure you want to delete this flavor?"
+msgstr "Êtes-vous sûr de vouloir supprimer cette variante ?"
+
+#: server/data/templates/registration/login.html:11
+msgid "Please log in to access the content"
+msgstr "Veuillez vous connecter pour accéder au contenu"
+
+#: server/data/templates/registration/login.html:46
+msgid "Forgot password?"
+msgstr "Mot de passe oublié ?"
+
+#: server/data/templates/registration/login.html:50
+msgid "Create an account"
+msgstr "Créer un compte"
+
+#: server/data/templates/registration/password_change_done.html:7
+#: server/data/templates/registration/password_change_form.html:7
+msgid "Password change"
+msgstr "Changement de mot de passe"
+
+#: server/data/templates/registration/password_change_done.html:10
+msgid "Password successfully changed"
+msgstr "Mot de passe modifié avec succès"
+
+#: server/data/templates/registration/password_change_done.html:11
+msgid "Your password has been updated successfully."
+msgstr "Votre mot de passe a été mis à jour avec succès."
+
+#: server/data/templates/registration/password_change_form.html:16
+msgid "Current password"
+msgstr "Mot de passe actuel"
+
+#: server/data/templates/registration/password_change_form.html:24
+#: server/data/templates/registration/password_reset_confirm.html:17
+msgid "New password"
+msgstr "Nouveau mot de passe"
+
+#: server/data/templates/registration/password_change_form.html:32
+#: server/data/templates/registration/password_reset_confirm.html:25
+msgid "Confirm password"
+msgstr "Confirmer le mot de passe"
+
+#: server/data/templates/registration/password_change_form.html:38
+#: server/data/templates/registration/password_reset_confirm.html:31
+msgid "Submit"
+msgstr "Valider"
+
+#: server/data/templates/registration/password_reset_complete.html:7
+#: server/data/templates/registration/password_reset_confirm.html:7
+#: server/data/templates/registration/password_reset_done.html:7
+#: server/data/templates/registration/password_reset_email.html:5
+#: server/data/templates/registration/password_reset_form.html:7
+msgid "Password reset"
+msgstr "Réinitialisation du mot de passe"
+
+#: server/data/templates/registration/password_reset_complete.html:10
+msgid "Password update complete"
+msgstr "Mise à jour du mot de passe terminée"
+
+#: server/data/templates/registration/password_reset_complete.html:11
+msgid "Your new password has been set. You can now log in."
+msgstr ""
+"Votre nouveau mot de passe a été défini. Vous pouvez maintenant vous "
+"connecter."
+
+#: server/data/templates/registration/password_reset_confirm.html:10
+msgid "Please enter your new password twice to confirm."
+msgstr "Veuillez saisir votre nouveau mot de passe deux fois pour confirmer."
+
+#: server/data/templates/registration/password_reset_done.html:10
+msgid "Reset message sent"
+msgstr "Message de réinitialisation envoyé"
+
+#: server/data/templates/registration/password_reset_done.html:11
+msgid ""
+"We have sent you an email with instructions to change your password, "
+"provided an account exists with the address you provided. You should receive "
+"this message shortly."
+msgstr ""
+"Nous vous avons envoyé un e-mail avec des instructions pour changer votre "
+"mot de passe, à condition qu'un compte existe avec l'adresse que vous avez "
+"fournie. Vous devriez recevoir ce message sous peu."
+
+#: server/data/templates/registration/password_reset_done.html:12
+msgid ""
+"If you do not receive a message, please check that you entered the address "
+"you registered with and check your spam folder."
+msgstr ""
+"Si vous ne recevez pas de message, veuillez vérifier que vous avez saisi "
+"l'adresse avec laquelle vous vous êtes inscrit et consultez votre dossier "
+"spam."
+
+#: server/data/templates/registration/password_reset_email.html:83
+msgid "Password reset request"
+msgstr "Demande de réinitialisation du mot de passe"
+
+#: server/data/templates/registration/password_reset_email.html:86
+msgid "You are receiving this email because you requested a password reset."
+msgstr ""
+"Vous recevez cet e-mail car vous avez demandé une réinitialisation de mot de "
+"passe."
+
+#: server/data/templates/registration/password_reset_email.html:87
+msgid "If you did not request this action, please ignore this message."
+msgstr "Si vous n'avez pas demandé cette action, veuillez ignorer ce message."
+
+#: server/data/templates/registration/password_reset_email.html:89
+msgid "Please follow this"
+msgstr "Veuillez suivre ce"
+
+#: server/data/templates/registration/password_reset_email.html:91
+msgid "[link]"
+msgstr "[lien]"
+
+#: server/data/templates/registration/password_reset_email.html:92
+msgid "to access the page that will allow you to set a new password."
+msgstr ""
+"pour accéder à la page qui vous permettra de définir un nouveau mot de passe."
+
+#: server/data/templates/registration/password_reset_email.html:94
+msgid "In case you forgot, here is your username:"
+msgstr "Au cas où vous l'auriez oublié, voici votre nom d'utilisateur :"
+
+#: server/data/templates/registration/password_reset_email.html:95
+msgid "Thank you for using our site!"
+msgstr "Merci d'utiliser notre site !"
+
+#: server/data/templates/registration/password_reset_email.html:99
+msgid "The team from"
+msgstr "L'équipe de"
+
+#: server/data/templates/registration/password_reset_form.html:10
+msgid "Please enter your email address."
+msgstr "Veuillez saisir votre adresse e-mail."
+
+#: server/data/templates/registration/password_reset_form.html:11
+msgid "A link will be sent to reset your password."
+msgstr "Un lien vous sera envoyé pour réinitialiser votre mot de passe."
+
+#: server/data/templates/registration/password_reset_form.html:17
+msgid "Send"
+msgstr "Envoyer"
+
+#: server/data/templates/registration/profile.html:7
+msgid "User profile"
+msgstr "Profil utilisateur"
+
+#: server/data/templates/registration/profile.html:12
+msgid "Personal information"
+msgstr "Informations personnelles"
+
+#: server/data/templates/registration/profile.html:19
+msgid "First name"
+msgstr "Prénom"
+
+#: server/data/templates/registration/profile.html:23
+msgid "Last name"
+msgstr "Nom"
+
+#: server/data/templates/registration/profile.html:27
+msgid "Email"
+msgstr "E-mail"
+
+#: server/data/templates/registration/profile.html:31
+#: server/data/templates/users.html:15
+msgid "Last login"
+msgstr "Dernière connexion"
+
+#: server/data/templates/registration/profile.html:38
+msgid "Permissions"
+msgstr "Permissions"
+
+#: server/data/templates/registration/profile.html:41
+msgid "Package"
+msgstr "Paquet"
+
+#: server/data/templates/registration/profile.html:44
+#: server/data/templates/users.html:16
+msgid "View packages"
+msgstr "Voir les paquets"
+
+#: server/data/templates/registration/profile.html:46
+msgid "No package access"
+msgstr "Pas d'accès aux paquets"
+
+#: server/data/templates/registration/profile.html:49
+#: server/data/templates/users.html:17
+msgid "Add packages"
+msgstr "Ajouter des paquets"
+
+#: server/data/templates/registration/profile.html:52
+msgid "No package addition"
+msgstr "Pas d'ajout de paquets"
+
+#: server/data/templates/registration/profile.html:55
+#: server/data/templates/users.html:19
+msgid "Delete packages"
+msgstr "Supprimer des paquets"
+
+#: server/data/templates/registration/profile.html:57
+msgid "No package deletion"
+msgstr "Pas de suppression de paquets"
+
+#: server/data/templates/registration/profile.html:62
+msgid "User"
+msgstr "Utilisateur"
+
+#: server/data/templates/registration/profile.html:65
+#: server/data/templates/users.html:20
+msgid "View users"
+msgstr "Voir les utilisateurs"
+
+#: server/data/templates/registration/profile.html:67
+msgid "No user access"
+msgstr "Pas d'accès aux utilisateurs"
+
+#: server/data/templates/registration/profile.html:70
+#: server/data/templates/users.html:22
+msgid "Edit users"
+msgstr "Modifier les utilisateurs"
+
+#: server/data/templates/registration/profile.html:73
+msgid "No user editing"
+msgstr "Pas de modification d'utilisateurs"
+
+#: server/data/templates/registration/profile.html:83
+msgid "Change password"
+msgstr "Changer le mot de passe"
+
+#: server/data/templates/registration/profile.html:87
+msgid "Edit profile"
+msgstr "Modifier le profil"
+
+#: server/data/templates/registration/profile_change.html:44
+msgid "Save"
+msgstr "Enregistrer"
+
+#: server/data/templates/registration/register.html:7
+msgid "New user"
+msgstr "Nouvel utilisateur"
+
+#: server/data/templates/registration/register.html:10
+msgid "Please fill out this form to register as a user:"
+msgstr ""
+"Veuillez remplir ce formulaire pour vous inscrire en tant qu'utilisateur :"
+
+#: server/data/templates/registration/register.html:45
+msgid "Register"
+msgstr "S'inscrire"
+
+#: server/data/templates/users.html:7
+msgid "User management"
+msgstr "Gestion des utilisateurs"
+
+#: server/data/templates/users.html:41
+msgid "Toggle view packages"
+msgstr "Basculer la visualisation des paquets"
+
+#: server/data/templates/users.html:57
+msgid "Toggle add packages"
+msgstr "Basculer l'ajout de paquets"
+
+#: server/data/templates/users.html:73
+msgid "Toggle delete packages"
+msgstr "Basculer la suppression de paquets"
+
+#: server/data/templates/users.html:89
+msgid "Toggle view users"
+msgstr "Basculer la visualisation des utilisateurs"
+
+#: server/data/templates/users.html:105
+msgid "Toggle edit users"
+msgstr "Basculer la modification des utilisateurs"
+
+#: server/data/templates/users.html:120
+msgid "Delete user"
+msgstr "Supprimer l'utilisateur"
+
+#: server/data/templates/users.html:121
+msgid "Are you sure you want to delete this user?"
+msgstr "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
+
+#: server/scripts/connector/decorators.py:39
+msgid "You must be logged in to access this page."
+msgstr "Vous devez être connecté pour accéder à cette page."
+
+#: server/scripts/connector/decorators.py:52
+msgid ""
+"Access denied. You do not have the required permissions to access this page."
+msgstr ""
+"Accès refusé. Vous n'avez pas les permissions requises pour accéder à cette "
+"page."
+
+#: server/scripts/connector/decorators.py:97
+msgid "Capability not recognized."
+msgstr "Capacité non reconnue."
+
+#: server/scripts/connector/decorators.py:108
+#, python-brace-format
+msgid ""
+"Capability '{capability}' has been removed from user {request.user.username}."
+msgstr ""
+"La capacité '{capability}' a été retirée de l'utilisateur {request.user."
+"username}."
+
+#: server/scripts/connector/decorators.py:122
+#, python-brace-format
+msgid ""
+"Capability '{capability}' has been granted to user {request.user.username}."
+msgstr ""
+"La capacité '{capability}' a été accordée à l'utilisateur {request.user."
+"username}."

@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
     {% if user.is_authenticated %}
         <div class="Article">
             <div class="ArticleHeader">
                 {% if perms.pack.view_packageentry %}
-                    <h3><i class="fa-solid fa-chart-simple"></i> Résumé</h3>
+                    <h3><i class="fa-solid fa-chart-simple"></i>{% trans 'Summary' %}</h3>
                 {% else %}
-                    <h3><i class="fa-solid fa-hourglass-half"></i> Veuillez patienter</h3>
+                    <h3><i class="fa-solid fa-hourglass-half"></i>{% trans 'Please wait' %}</h3>
                 {% endif %}
             </div>
             <div class="ArticleContent">
@@ -17,7 +18,7 @@
                             <i class="fa-solid fa-box"></i>
                             <div class="stat-content">
                                 <span class="stat-value">{{ pack_number }}</span>
-                                <span class="stat-label">Packages disponibles</span>
+                                <span class="stat-label">{% trans 'Packages available' %}</span>
                             </div>
                         </div>
                     </div>
@@ -25,9 +26,8 @@
                     <div class="info-box">
                         <i class="fa-solid fa-circle-info"></i>
                         <div>
-                            <p>Votre demande d'accès à la base de données est en cours d'examen.</p>
-                            <p>Si vous aviez précédemment accès, vos permissions ont peut-être été révoquées. Contactez
-                                votre administrateur.</p>
+                            <p>{% trans 'Your database access request is under review.' %}</p>
+                            <p>{% trans 'If you previously had access, your permissions may have been revoked. Please contact your administrator.' %}</p>
                         </div>
                     </div>
                 {% endif %}
@@ -36,13 +36,13 @@
     {% else %}
         <div class="Article">
             <div class="ArticleHeader">
-                <h3><i class="fa-solid fa-lock"></i> Authentification requise</h3>
+                <h3><i class="fa-solid fa-lock"></i> {% trans 'Authentication required' %}</h3>
             </div>
             <div class="ArticleContent centering-col">
-                <p>Veuillez vous connecter pour accéder au contenu.</p>
+                <p>{% trans 'Please log in to access the content.' %}</p>
                 <a class="btn btn-primary" href="{% url 'login' %}">
                     <i class="fa-solid fa-right-to-bracket"></i>
-                    Se connecter
+                    {% trans 'Log in' %}
                 </a>
             </div>
         </div>

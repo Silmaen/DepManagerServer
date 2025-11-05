@@ -1,13 +1,14 @@
-{% extends 'registration/base_registration.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block mainsection %}
+{% block content %}
     <div class="Article">
         <div class="ArticleHeader">
-            <h3><i class="fa-solid fa-right-to-bracket"></i> Connexion</h3>
+            <h3><i class="fa-solid fa-right-to-bracket"></i> {% trans 'Login' %}</h3>
         </div>
         <div class="ArticleContent">
             <div class="login-form">
-                <p class="form-description">Veuillez vous connecter pour accéder au contenu</p>
+                <p class="form-description">{% trans 'Please log in to access the content' %}</p>
                 <form method="post">
                     {% csrf_token %}
                     <div class="form-group">
@@ -35,18 +36,18 @@
                     {% endif %}
                     <button type="submit" class="btn btn-primary w-full">
                         <i class="fa-solid fa-right-to-bracket"></i>
-                        Se connecter
+                        {% trans 'Log in' %}
                     </button>
                 </form>
 
                 <div class="login-links">
                     <a class="btn" href="{% url 'password_reset' %}">
                         <i class="fa-solid fa-lock-open"></i>
-                        Mot de passe oublié ?
+                        {% trans 'Forgot password?' %}
                     </a>
                     <a class="btn" href="{% url 'register' %}">
                         <i class="fa-solid fa-user-plus"></i>
-                        Créer un compte
+                        {% trans 'Create an account' %}
                     </a>
                 </div>
             </div>
@@ -54,7 +55,7 @@
         <div class="ArticleFooter">
             <a class="btn" href="{% url 'index' %}">
                 <i class="fa-solid fa-circle-arrow-left"></i>
-                Retour
+                {% trans 'Back' %}
             </a>
         </div>
     </div>

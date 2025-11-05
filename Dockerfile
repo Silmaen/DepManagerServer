@@ -14,6 +14,7 @@ RUN apk add --no-cache \
     nginx-mod-http-upload-progress \
     nginx-mod-http-encrypted-session \
     tzdata \
+    gettext \
     && pip install --no-cache-dir -r requirements.txt
 
 # Ajouter le script d'initialisation et le rendre exécutable
@@ -21,6 +22,5 @@ COPY entrypoint.py /entrypoint.py
 RUN chmod +x /entrypoint.py
 
 COPY ./server ./server
-COPY VERSION ./server/VERSION
 
 ENTRYPOINT ["/entrypoint.py"]

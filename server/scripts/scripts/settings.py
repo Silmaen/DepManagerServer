@@ -38,21 +38,24 @@ if not DATA_DIR.exists():
     DATA_DIR = SITE_DIR.parent / "data"
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+SITE_VERSION = "666.666.666"
+SITE_HASH = "unstable"
+SITE_API_VERSION = "0.0.0"
+
 if (SITE_DIR / "VERSION").exists():
     with open(SITE_DIR / "VERSION") as fp:
         lines = fp.readlines()
-    SITE_VERSION = lines[0].strip()
-    SITE_API_VERSION = lines[1].strip()
-    if len(lines) > 2:
-        SITE_HASH = lines[2].strip()
-    else:
-        SITE_HASH = "unknown"
+    for line in lines:
+        key, value = line.split(":")
+        if key.strip().lower() == "version":
+            SITE_VERSION = value.strip()
+        elif key.strip().lower() == "api_version":
+            SITE_API_VERSION = value.strip()
+        elif key.strip().lower() == "hash":
+            SITE_HASH = value.strip()
 else:
-    SITE_VERSION = "666.666.666"
-    SITE_HASH = "unknown"
     if "GIT_HASH" in os.environ:
         SITE_HASH = os.environ["GIT_HASH"]
-    SITE_API_VERSION = "2.0.0"
 #
 ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [

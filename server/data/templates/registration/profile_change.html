@@ -1,9 +1,10 @@
-{% extends 'registration/base_registration.html' %}
+{% extends 'base.html' %}
+{% load i18n %}
 
-{% block mainsection %}
+{% block content %}
     <div class="Article user_form">
         <div class="ArticleHeader">
-            <h4><i class="fa-solid fa-circle-user"></i>{{ user }}</h4>
+            <h4><i class="fa-solid fa-circle-user"></i> {{ user }}</h4>
         </div>
         <div class="ArticleContent user_form">
             {% if form.errors %}
@@ -39,15 +40,15 @@
                 {{ form.as_p }}
                 {{ profile_form.as_p }}
                 <button id="submit" class="button">
-                    <i class="fa-solid fa-user-plus"></i>
-                    Sauver
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    {% trans 'Save' %}
                 </button>
             </form>
         </div>
-        <div class=" ArticleFooter">
+        <div class="ArticleFooter">
             <a class="button" href="{% url 'profile' %}">
                 <i class="fa-solid fa-circle-arrow-left"></i>
-                Retour
+                {% trans 'Back' %}
             </a>
         </div>
     </div>

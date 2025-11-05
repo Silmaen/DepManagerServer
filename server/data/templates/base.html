@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+{% load i18n %}
 {% load static %}
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'fr' }}">
 <head>
     <title>Dependency Registry Browser - {{ title }}</title>
     <meta charset="UTF-8">
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="robots" content="index,follow">
-    <meta name="author" content="Argawaen">
+    <meta name="author" content="Silmaen">
     <meta name="description" content="le contenu">
     <meta name="keywords" content="FUCK!!">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,40 +31,56 @@
             <h1>Dependency Registry Browser</h1>
         </a>
 
-        {% if perms.pack.view_packageentry %}
-            <ul class="nav-menu">
+
+        <ul class="nav-menu">
+            {% if user_capabilities.can_view_package %}
                 <li class="nav-item {% if page == 'packages' %}current{% endif %}">
-                    <a href="{% url 'package' %}">Packages</a>
+                    <a href="{% url 'package' %}" title="{% trans 'Packages' %}">{% trans 'Packages' %}</a>
                 </li>
-                {% if perms.auth.view_user %}
-                    <li class="nav-item {% if page == 'users' %}current{% endif %}">
-                        <a href="{% url 'users' %}">Users</a>
-                    </li>
-                {% endif %}
-                {% if perms.pack.delete_packageentry %}
-                    <li class="nav-item {% if page == 'admin' %}current{% endif %}">
-                        <a href="{% url 'admin_db' %}">Admin</a>
-                    </li>
-                {% endif %}
-            </ul>
-        {% endif %}
+            {% endif %}
+            {% if user_capabilities.can_view_user %}
+                <li class="nav-item {% if page == 'users' %}current{% endif %}">
+                    <a href="{% url 'users' %}" title="{% trans 'Users' %}">{% trans 'Users' %}</a>
+                </li>
+            {% endif %}
+            {% if user_capabilities.can_delete_package %}
+                <li class="nav-item {% if page == 'admin' %}current{% endif %}">
+                    <a href="{% url 'admin_db' %}" title="{% trans 'Admin' %}">{% trans 'Admin' %}</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        <form class="language-selector" action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <input name="next" type="hidden" value="{{ request.path }}">
+            {% get_current_language as CURRENT_LANGUAGE %}
+            {% get_available_languages as LANGUAGES %}
+            <select name="language" class="form-control language-select" onchange="this.form.submit()">
+                {% for code,lang in LANGUAGES %}
+                    <option value="{{ code }}" {% if CURRENT_LANGUAGE == code %}selected{% endif %}>
+                        {{ code|upper }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
 
         <div class="flex items-center gap-sm">
             {% if user.is_authenticated %}
-                <a class="btn btn-icon" href="{% url 'profile' %}">
+                <a class="btn btn-icon" href="{% url 'profile' %}" title="{% trans 'Go to user profile' %}">
                     <i class="fa-solid fa-user"></i>
                     {{ user.username }}
                 </a>
                 <form method="post" action="{% url 'logout' %}">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-icon">
-                        <i class="fa-solid fa-right-from-bracket"></i>
+                    <button type="submit" class="btn btn-icon" title="{% trans 'Logout' %}">
+                        <i class="fa-solid fa-right-from-bracket"></i>{% trans 'Logout' %}
                     </button>
                 </form>
             {% else %}
-                <a class="btn" href="{% url 'login' %}">
+                <a class="btn" href="{% url 'login' %}" title="{% trans 'Login' %}">
                     <i class="fa-solid fa-right-to-bracket"></i>
-                    Login
+                    {% trans 'Login' %}
                 </a>
             {% endif %}
         </div>
@@ -71,6 +88,17 @@
 </header>
 
 <main class="content">
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message message-{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% elif message.tags == 'warning' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                    {{ message }}
+                    <button class="message-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% block content %}{% endblock %}
 </main>
 
@@ -78,9 +106,9 @@
     <p>
         <a href="https://github.com/Silmaen/DepManagerServer"><i class="fa-brands fa-github"></i>
             Package Registry Browser</a>
-        {% if version %}· Version: {{ version.number }} ({{ version.hash }}){% endif %}
+        {% if version %}· Version: {{ version.number }} ({{ version.hash }}) · API: {{ version.api }}{% endif %}
     </p>
-    <p>© Designed by Argawaen.</p>
+    <p>© {% trans 'Designed by' %} Silmaen.</p>
 
 </footer>
 

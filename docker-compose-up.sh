@@ -26,7 +26,7 @@ fi
 
 # Write version info
 cat VERSION > server/VERSION
-git rev-parse --short HEAD >> server/VERSION
+echo "hash: $(git rev-parse --short HEAD)" >> server/VERSION
 
 export DOCKER_BUILDKIT=0
 docker compose down --rmi local --volumes --remove-orphans

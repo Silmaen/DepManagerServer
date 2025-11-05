@@ -112,18 +112,14 @@ UI can manager users, set database options, location of a file in the repository
 It can also browse through the packages in the server.
 
 ## Roadmap
--
 
-- v1.4.0 (future)
-    - [ ] UI improvements
-        - [ ] Search packages
-    - [ ] API improvements
-        - [ ] search packages
-- v1.3.1 (in progress)
+- v1.4.0 (in progress)
     - [X] Support for YAML file as package definition
     - [X] Modernize the docker image backend
     - [X] Modernize the web UI
-    - [ ] Fix security issues
+    - [X] Fix security issues
+    - [X] Improve logging
+    - [X] Multilanguage support
 - v1.3.0 (17-06-2025)
     - [X] User management
         - [x] list users
