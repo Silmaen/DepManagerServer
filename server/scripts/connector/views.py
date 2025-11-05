@@ -1,9 +1,12 @@
 """Fichier main.users.users_view.py les vues users."""
+
 from django.contrib.auth import login
 from django.contrib.auth.views import PasswordResetView
 from django.shortcuts import render, redirect, reverse
 
+from scripts.settings import SITE_API_VERSION, SITE_HASH, SITE_VERSION
 from . import settings
+from .decorators import get_capability
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 
 
@@ -13,7 +16,18 @@ def profile(request):
         return render(
             request,
             "registration/profile.html",
-            {**settings.base_info, "user": request.user},
+            {
+                **settings.base_info,
+                "title": "Profile",
+                "page": "connexion",
+                "version": {
+                    "number": SITE_VERSION,
+                    "hash": SITE_HASH,
+                    "api": SITE_API_VERSION,
+                },
+                "user_capabilities": get_capability(request.user),
+                "user": request.user,
+            },
         )
     else:
         return register(request)
@@ -28,13 +42,37 @@ def register(request):
             login(request, user)
             return redirect(reverse("index"))
         return render(
-            request, "registration/register.html", {**settings.base_info, "form": form}
+            request,
+            "registration/register.html",
+            {
+                **settings.base_info,
+                "title": "Register",
+                "page": "connexion",
+                "version": {
+                    "number": SITE_VERSION,
+                    "hash": SITE_HASH,
+                    "api": SITE_API_VERSION,
+                },
+                "user_capabilities": get_capability(request.user),
+                "form": form,
+            },
         )
     else:
         return render(
             request,
             "registration/register.html",
-            {**settings.base_info, "form": CustomUserCreationForm},
+            {
+                **settings.base_info,
+                "title": "Register",
+                "page": "connexion",
+                "version": {
+                    "number": SITE_VERSION,
+                    "hash": SITE_HASH,
+                    "api": SITE_API_VERSION,
+                },
+                "user_capabilities": get_capability(request.user),
+                "form": CustomUserCreationForm,
+            },
         )
 
 
@@ -54,6 +92,14 @@ def profile_edit(request):
         "registration/profile_change.html",
         {
             **settings.base_info,
+            "title": "Profile",
+            "page": "connexion",
+            "version": {
+                "number": SITE_VERSION,
+                "hash": SITE_HASH,
+                "api": SITE_API_VERSION,
+            },
+            "user_capabilities": get_capability(request.user),
             "form": form,
         },
     )
