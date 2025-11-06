@@ -22,4 +22,5 @@ class PackageEntryForm(ModelForm):
             "kind",
             "abi",
             "package",
+            "dependencies",
         ]

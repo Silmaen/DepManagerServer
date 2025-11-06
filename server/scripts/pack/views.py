@@ -17,6 +17,7 @@ from connector.decorators import (
     get_capability,
     user_capability_required,
     toggle_capability,
+    has_capability,
 )
 from scripts.settings import MEDIA_ROOT, SITE_VERSION, SITE_HASH, SITE_API_VERSION
 from .db_locking import locker
@@ -353,7 +354,7 @@ def api(request):
         auth_response = auths_required(request)
         if auth_response is not None:
             return auth_response
-        if not request.user.has_perm("pack.view_packageentry"):
+        if not has_capability(request.user, "can_view_package"):
             return HttpResponseForbidden("Please ask the right to see packages")
 
         if locker.is_locked():
@@ -363,6 +364,15 @@ def api(request):
         if request.method == "GET":
             entries = PackageEntry.objects.all()
             resp = "\n".join(pack.to_dep_entry() for pack in entries)
+            client_api_version = request.headers.get("X-API-Version", "1.0.0")
+            if _version_supports_dependencies(client_api_version):
+                resp = "\n".join(
+                    f"{pack.to_dep_entry()} | deps: {pack.dependencies}"
+                    for pack in entries
+                )
+            else:
+                resp = "\n".join(pack.to_dep_entry() for pack in entries)
+
             return HttpResponse(resp)
         if request.method == "POST":
             logger.debug(f"POST request on API")
@@ -406,7 +416,7 @@ def api(request):
             #
             # Need credentials of adding a package
             elif data["action"] == "push":
-                if not request.user.has_perm("pack.add_packageentry"):
+                if not has_capability(request.user, "can_add_package"):
                     return HttpResponseForbidden(
                         "Please ask the right to push packages"
                     )
@@ -432,36 +442,44 @@ def api(request):
                             Path(MEDIA_ROOT) / "packages" / request.POST["package.name"]
                         )
                         move(origin_path, new_path)
+
+                        entry_data = {
+                            "name": data["name"],
+                            "version": data["version"],
+                            "os": data["os"],
+                            "arch": data["arch"],
+                            "kind": data["kind"],
+                            "abi": data["abi"],
+                            "glibc": data.get("glibc", ""),
+                            "package": str(new_path),
+                        }
+                        old_format = False
                         if "build_date" in data:
-                            entry = PackageEntry.objects.create(
-                                name=data["name"],
-                                version=data["version"],
-                                os=data["os"],
-                                arch=data["arch"],
-                                kind=data["kind"],
-                                abi=data["abi"],
-                                glibc=data["glibc"],
-                                build_date=data["build_date"],
-                                package=str(new_path),
+                            entry_data["build_date"] = data["build_date"]
+                        else:
+                            logger.info(f"Pushing without build_date field.")
+                            old_format = True
+
+                        if "dependencies" in data:
+                            entry_data["dependencies"] = data["dependencies"]
+                            logger.info(
+                                f"Package with dependencies: {data['dependencies']}"
                             )
-                            entry.save()
+                        else:
+                            logger.info(f"Pushing without dependencies field.")
+                            old_format = True
+
+                        entry = PackageEntry.objects.create(**entry_data)
+                        entry.save()
+
+                        if not old_format:
                             return HttpResponse(
-                                f"GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                "GOOD.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
                                 status=200,
                             )
                         else:
-                            entry = PackageEntry.objects.create(
-                                name=data["name"],
-                                version=data["version"],
-                                os=data["os"],
-                                arch=data["arch"],
-                                kind=data["kind"],
-                                abi=data["abi"],
-                                package=str(new_path),
-                            )
-                            entry.save()
                             return HttpResponse(
-                                f"WARNING old FORMAT.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
+                                f"GOOD with warnings: old format without all fields.\nPOST: {data}\nFILES: {request.FILES.dict()}\nheaders: {request.headers}",
                                 status=201,
                             )
                     return HttpResponse(
@@ -477,7 +495,7 @@ def api(request):
             #
             # Require full credentials on database
             elif data["action"] == "delete":
-                if not request.user.has_perm("pack.delete_packageentry"):
+                if not has_capability(request.user, "can_delete_package"):
                     return HttpResponseForbidden(
                         "Please ask the right to push packages"
                     )
@@ -497,3 +515,17 @@ def api(request):
         return HttpResponseForbidden()
     except Exception as err:
         return HttpResponse(f"""Exception during treatment {err}.""", status=406)
+
+
+def _version_supports_dependencies(version: str) -> bool:
+    """
+    Check if client API version supports dependencies field.
+
+    :param version: Client API version string (e.g., "2.1.0")
+    :return: True if version >= 2.1.0, False otherwise
+    """
+    try:
+        major, minor, patch = map(int, version.split("."))
+        return (major, minor, patch) >= (2, 1, 0)
+    except (ValueError, AttributeError):
+        return False

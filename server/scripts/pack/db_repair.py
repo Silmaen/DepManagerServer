@@ -32,7 +32,7 @@ def get_file_infos(file: Path):
                 "abi": "",
                 "glibc": "",
                 "build_date": old_date,
-                "dependencies": [],
+                "dependencies": "",
             }
             # test if info.yaml is present
             if "./info.yaml" in archive.getnames():
@@ -139,6 +139,7 @@ def long_repair(do_correct: bool = False, skip_large_files: bool = True):
                 "abi": pack.get_abi_display().split("-")[0],
                 "glibc": pack.glibc,
                 "build_date": pack.build_date,
+                "dependencies": pack.dependencies,
             }
             if len(data) == 0:
                 total_error_count += 1

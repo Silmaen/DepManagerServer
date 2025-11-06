@@ -49,6 +49,10 @@ class PackageEntry(models.Model):
     date = models.DateTimeField(default=timezone.now, verbose_name="Date of Upload")
     package = models.FileField(upload_to="packages", verbose_name="Package file")
 
+    dependencies = models.TextField(
+        default="", verbose_name="Package dependencies", blank=True
+    )
+
     class Meta:
         """
         Metadata for the packages
