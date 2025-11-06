@@ -120,6 +120,7 @@ It can also browse through the packages in the server.
     - [X] Fix security issues
     - [X] Improve logging
     - [X] Multilanguage support
+    - [X] Support for package dependencies
 - v1.3.0 (17-06-2025)
     - [X] User management
         - [x] list users
