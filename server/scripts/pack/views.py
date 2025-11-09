@@ -365,6 +365,7 @@ def api(request):
             entries = PackageEntry.objects.all()
             resp = "\n".join(pack.to_dep_entry() for pack in entries)
             client_api_version = request.headers.get("X-API-Version", "1.0.0")
+            logger.debug(f"Client API : {client_api_version} ({SITE_VERSION})")
             if _version_supports_dependencies(client_api_version):
                 resp = "\n".join(
                     f"{pack.to_dep_entry()} | deps: {pack.dependencies}"
@@ -403,7 +404,7 @@ def api(request):
                     return HttpResponse(f"""ERROR No matching package.""", status=406)
                 resp = ""
                 for pack in package:
-                    pack_u = f"{pack}".replace(MEDIA_ROOT, "/media/")
+                    pack_u = f"{pack}".replace(str(MEDIA_ROOT), "/media/")
                     if not pack_u.startswith("/media/"):
                         pack_u = f"/media/{pack_u}"
                     resp += f"{pack_u}\n"
