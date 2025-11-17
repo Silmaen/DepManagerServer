@@ -1,5 +1,7 @@
 # DepManagerServer
 
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 Simple repository server for the DepManager tool.
 
 This server aims to host all the packages built for [DepManager](https://github.com/Silmaen/DepManager).
@@ -113,7 +115,25 @@ It can also browse through the packages in the server.
 
 ## Roadmap
 
-- v1.4.0 (in progress)
+- v1.5.0 (planned for 17-04-2026)
+    - [ ] Statistics module
+        - [ ] Package download statistics
+        - [ ] User Statistics
+        - [ ] Storage usage statistics
+    - [ ] Search capabilities
+        - [ ] Better UI for package search
+    - [ ] Allow server mirroring
+    - [ ] Add editing capabilities
+        - [ ] Edit package metadata in the UI
+        - [ ] View/Edit package content in the UI
+    - [ ] API improvements
+        - [ ] follow API adjustments in DepManager client
+    - [ ] Add recipe management
+        - [ ] Upload recipe files
+        - [ ] Browse recipes in the UI
+        - [ ] Link recipes to packages
+        - [ ] Download recipes from the client
+- v1.4.0 (18-11-2025)
     - [X] Support for YAML file as package definition
     - [X] Modernize the docker image backend
     - [X] Modernize the web UI

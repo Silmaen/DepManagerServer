@@ -854,6 +854,11 @@ textarea::placeholder {
     flex: 1;
 }
 
+.flavor-size-badge {
+    margin-left: auto;
+    padding-left: var(--spacing-md);
+}
+
 @media (max-width: 768px) {
     .detail-header {
         flex-direction: column;
@@ -927,5 +932,3 @@ textarea::placeholder {
     border-color: var(--color-primary-light);
     background-color: var(--bg-surface);
 }
-
-

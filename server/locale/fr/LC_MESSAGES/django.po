@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-04 22:54+0100\n"
+"POT-Creation-Date: 2025-11-17 20:40+0100\n"
 "PO-Revision-Date: 2025-01-04 12:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: French <fr@li.org>\n"
@@ -165,11 +165,11 @@ msgstr "Version..."
 msgid "Filter"
 msgstr "Filtrer"
 
-#: server/data/templates/package.html:65
+#: server/data/templates/package.html:67
 msgid "View details"
 msgstr "Voir les détails"
 
-#: server/data/templates/package.html:123
+#: server/data/templates/package.html:125
 msgid "No packages match the search criteria"
 msgstr "Aucun paquet ne correspond aux critères de recherche"
 
@@ -186,11 +186,23 @@ msgstr "Aucun paquet ne correspond aux critères de recherche"
 msgid "Back"
 msgstr "Retour"
 
-#: server/data/templates/package_detail.html:72
+#: server/data/templates/package_detail.html:26
+msgid "No description available for this package."
+msgstr "Pas de description disponible pour ce paquet."
+
+#: server/data/templates/package_detail.html:30
+msgid "Dependencies:"
+msgstr "Dépendances :"
+
+#: server/data/templates/package_detail.html:70
+msgid "This package has no dependencies."
+msgstr "Ce paquet n'a pas de dépendances."
+
+#: server/data/templates/package_detail.html:126
 msgid "Delete this flavor"
 msgstr "Supprimer cette variante"
 
-#: server/data/templates/package_detail.html:73
+#: server/data/templates/package_detail.html:127
 msgid "Are you sure you want to delete this flavor?"
 msgstr "Êtes-vous sûr de vouloir supprimer cette variante ?"
 
@@ -473,33 +485,33 @@ msgstr "Supprimer l'utilisateur"
 msgid "Are you sure you want to delete this user?"
 msgstr "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
 
-#: server/scripts/connector/decorators.py:39
+#: server/scripts/connector/decorators.py:40
 msgid "You must be logged in to access this page."
 msgstr "Vous devez être connecté pour accéder à cette page."
 
-#: server/scripts/connector/decorators.py:52
+#: server/scripts/connector/decorators.py:53
 msgid ""
 "Access denied. You do not have the required permissions to access this page."
 msgstr ""
 "Accès refusé. Vous n'avez pas les permissions requises pour accéder à cette "
 "page."
 
-#: server/scripts/connector/decorators.py:97
+#: server/scripts/connector/decorators.py:103
 msgid "Capability not recognized."
 msgstr "Capacité non reconnue."
 
-#: server/scripts/connector/decorators.py:108
-#, python-brace-format
+#: server/scripts/connector/decorators.py:115
 msgid ""
-"Capability '{capability}' has been removed from user {request.user.username}."
+"Capability '{capability}' has been removed from user {user.username} by "
+"{request.user.username}."
 msgstr ""
-"La capacité '{capability}' a été retirée de l'utilisateur {request.user."
-"username}."
+"La capacité '{capability}' a été retirée de l'utilisateur {user.username} par "
+"{request.user.username}."
 
-#: server/scripts/connector/decorators.py:122
-#, python-brace-format
+#: server/scripts/connector/decorators.py:128
 msgid ""
-"Capability '{capability}' has been granted to user {request.user.username}."
+"Capability '{capability}' has been granted to user {user.username} by "
+"{request.user.username}."
 msgstr ""
-"La capacité '{capability}' a été accordée à l'utilisateur {request.user."
-"username}."
+"La capacité '{capability}' a été accordée à l'utilisateur {user.username} par"
+"{request.user.username}."

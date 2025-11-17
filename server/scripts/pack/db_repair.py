@@ -33,6 +33,7 @@ def get_file_infos(file: Path):
                 "glibc": "",
                 "build_date": old_date,
                 "dependencies": "",
+                "description": "",
             }
             # test if info.yaml is present
             if "./info.yaml" in archive.getnames():
@@ -71,6 +72,10 @@ def get_file_infos(file: Path):
                             data[key] = datetime.fromisoformat(val)
                             continue
                         data[key] = val
+            if "./description.md" in archive.getnames():
+                desc_file = archive.extractfile("./description.md")
+                description = desc_file.read().decode("utf-8")
+                data["description"] = description
             return data
         except KeyError:
             logger.warning(
@@ -140,6 +145,7 @@ def long_repair(do_correct: bool = False, skip_large_files: bool = True):
                 "glibc": pack.glibc,
                 "build_date": pack.build_date,
                 "dependencies": pack.dependencies,
+                "description": pack.description,
             }
             if len(data) == 0:
                 total_error_count += 1
