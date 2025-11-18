@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
+{% load markdown_extras %}
 
 {% block extra_head %}
     <link rel="stylesheet" href="{% static 'css/folding_box.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/markdown.css' %}"/>
 {% endblock %}
 
 {% block content %}
@@ -19,61 +21,19 @@
         </div>
         <div class="ArticleContent">
             {% if package.description %}
-                <p>{{ package.description|linebreaks }}</p>
+                <div class="markdown-content">
+                    {{ package.description|markdown }}
+                </div>
             {% else %}
                 <p class="text-muted">
                     <i class="fa-solid fa-circle-info"></i>
                     {% trans 'No description available for this package.' %}
                 </p>
             {% endif %}
-            {% if package.dependencies %}
-                <h3>{% trans 'Dependencies:' %}</h3>
-                {% for dep in package.dependencies %}
-                    <div class="flavor-badges">
-                        <span class="flavor-badge">
-                            {% if dep.name %}{{ dep.name }}{% endif %}/
-                            {% if dep.version %}{{ dep.version }}{% else %}*{% endif %}
-                        </span>
-
-                        {% if dep.os %}
-                            <span class="flavor-badge">
-                                <i class="fa-brands fa-{% if dep.os == 'Linux' %}linux{% elif dep.os == 'Windows' %}windows{% else %}diaspora{% endif %}"></i>
-                                {{ dep.os }}
-                            </span>
-                        {% endif %}
-                        {% if dep.arch %}
-                            <span class="flavor-badge">
-                                <i class="fa-solid fa-microchip"></i> {{ dep.arch }}
-                            </span>
-                        {% endif %}
-                        {% if dep.kind %}
-                            <span class="flavor-badge">
-                                <i class="fa-solid fa-cube"></i> {{ dep.kind }}
-                            </span>
-                        {% endif %}
-                        {% if dep.abi %}
-                            <span class="flavor-badge">
-                                <i class="fa-solid fa-code"></i>{{ dep.abi }}
-                            </span>
-                        {% endif %}
-                        {% if dep.glibc %}
-                            <span class="flavor-badge">
-                                <i class="fa-solid fa-book"></i>
-                                glibc {{ dep.glibc }}
-                            </span>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p class="text-muted">
-                    <i class="fa-solid fa-circle-info"></i>
-                    {% trans 'This package has no dependencies.' %}
-                </p>
-            {% endif %}
         </div>
         <div class="ArticleContent">
             <div class="package-detail-grid">
-                {% for version, flavors in package.versions.items %}
+                {% for version, version_data in package.versions.items %}
                     <div class="package-version-box folding_box" id="{{ version }}">
                         <div class="package-version-header folding_box_header"
                              onclick="toggleContent('{{ version }}')">
@@ -83,44 +43,85 @@
                             </div>
                             <div class="version-date">
                                 <i class="fa-solid fa-calendar"></i>
-                                {% with latest=flavors|dictsortreversed:"build_date"|first %}
+                                {% with latest=version_data.flavors|dictsortreversed:"build_date"|first %}
                                     {{ latest.build_date|date:"d/m/Y" }}
                                 {% endwith %}
                             </div>
                         </div>
                         <div class="package-flavors folding_box_content">
-                            {% for flavor in flavors %}
+                            <h4><i class="fa-solid fa-boxes-stacked"></i> {% trans 'Available Flavors' %}</h4>
+                            {% for flavor in version_data.flavors %}
                                 <div class="flavor-detail-item">
-                                    <div class="flavor-badges">
-                                        <span class="flavor-badge">
-                                            <i class="fa-brands fa-{% if flavor.os == 'Linux' %}linux{% elif flavor.os == 'Windows' %}windows{% else %}diaspora{% endif %}"></i>
-                                            {{ flavor.os }}
-                                        </span>
-                                        <span class="flavor-badge">
-                                            <i class="fa-solid fa-microchip"></i>
-                                            {{ flavor.arch }}
-                                        </span>
-                                        <span class="flavor-badge">
-                                            <i class="fa-solid fa-cube"></i>
-                                            {{ flavor.kind }}
-                                        </span>
-                                        <span class="flavor-badge">
-                                            <i class="fa-solid fa-code"></i>
-                                            {{ flavor.abi }}
-                                        </span>
-                                        {% if flavor.glibc %}
+                                    <div class="flavor-info-section">
+                                        <div class="flavor-badges">
                                             <span class="flavor-badge">
-                                                <i class="fa-solid fa-book"></i>
-                                                glibc {{ flavor.glibc }}
+                                                <i class="fa-brands fa-{% if flavor.os == 'Linux' %}linux{% elif flavor.os == 'Windows' %}windows{% else %}diaspora{% endif %}"></i>
+                                                {{ flavor.os }}
                                             </span>
-                                        {% endif %}
+                                            <span class="flavor-badge">
+                                                <i class="fa-solid fa-microchip"></i>
+                                                {{ flavor.arch }}
+                                            </span>
+                                            <span class="flavor-badge">
+                                                <i class="fa-solid fa-cube"></i>
+                                                {{ flavor.kind }}
+                                            </span>
+                                            <span class="flavor-badge">
+                                                <i class="fa-solid fa-code"></i>
+                                                {{ flavor.abi }}
+                                            </span>
+                                            {% if flavor.glibc %}
+                                                <span class="flavor-badge">
+                                                    <i class="fa-solid fa-book"></i>
+                                                    glibc {{ flavor.glibc }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <span class="flavor-badge flavor-size-badge">
+                                            <i class="fa-solid fa-file-zipper"></i>
+                                            {{ flavor.package_size }}
+                                        </span>
                                     </div>
-                                    <span class="flavor-badge flavor-size-badge">
-                                        <i class="fa-solid fa-file-zipper"></i>
-                                        {{ flavor.package_size }}
-                                    </span>
+
+                                    {% if flavor.dependencies and flavor.dependencies|length > 0 %}
+                                        <div class="flavor-dependencies">
+                                            <span class="dependencies-title">
+                                                <i class="fa-solid fa-link"></i>
+                                                {% trans 'Dependencies' %} ({{ flavor.dependencies|length }}):
+                                            </span>
+                                            <div class="dependencies-list-inline">
+                                                {% for dep in flavor.dependencies %}
+                                                    <span class="flavor-badge dep-badge">
+                                                        <span class="dep-name">
+                                                            {{ dep.name }}/{% if dep.version %}{{ dep.version }}
+                                                        {% else %}*{% endif %}
+                                                        </span>
+                                                        {% if dep.os %}
+                                                            <i class="fa-brands fa-{% if dep.os == 'Linux' %}linux{% elif dep.os == 'Windows' %}windows{% else %}diaspora{% endif %}"
+                                                               title="{{ dep.os }}"></i>
+                                                        {% endif %}
+                                                        {% if dep.arch %}
+                                                            <i class="fa-solid fa-microchip" title="{{ dep.arch }}"></i>
+                                                        {% endif %}
+                                                        {% if dep.kind %}
+                                                            <i class="fa-solid fa-cube" title="{{ dep.kind }}"></i>
+                                                        {% endif %}
+                                                        {% if dep.abi %}
+                                                            <i class="fa-solid fa-code" title="{{ dep.abi }}"></i>
+                                                        {% endif %}
+                                                        {% if dep.glibc %}
+                                                            <i class="fa-solid fa-book"
+                                                               title="glibc {{ dep.glibc }}"></i>
+                                                        {% endif %}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
                                     {% if perms.pack.delete_packageentry %}
-                                        <form method="post" action="{% url 'delete_package' flavor.pk %}">
+                                        <form method="post" action="{% url 'delete_package' flavor.pk %}"
+                                              class="flavor-actions">
                                             {% csrf_token %}
                                             <button type="submit" class="btn-icon btn-danger"
                                                     title="{% trans 'Delete this flavor' %}"
