@@ -469,6 +469,8 @@ def api(request):
                         else:
                             logger.info(f"Pushing without dependencies field.")
                             old_format = True
+                        if "description" in data:
+                            entry_data["description"] = data["description"]
 
                         entry = PackageEntry.objects.create(**entry_data)
                         entry.save()

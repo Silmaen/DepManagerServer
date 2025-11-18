@@ -9,7 +9,7 @@
 }
 
 .folding_box_header::before {
-    content: "\25BC"; /* Unicode pour la flèche vers le bas */
+    content: "\25BC";
     display: inline-block;
     margin-right: 0.1em;
     margin-left: 0.1em;
@@ -18,9 +18,6 @@
 
 .folding_box_header.open::before {
     transform: rotate(180deg);
-}
-
-.folding_box_header:hover {
 }
 
 .folding_box_content {

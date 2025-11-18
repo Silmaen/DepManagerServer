@@ -51,7 +51,9 @@ class PackageEntryAdmin(admin.ModelAdmin):
         ("Identity", {"fields": ("os", "arch", "kind", "abi", "glibc")}),
         # Field set 3: dependencies
         ("Dependencies", {"fields": ("dependencies",)}),
-        # Field set 4: the package file
+        # Field set 4: description
+        ("Description", {"fields": ("description",)}),
+        # Field set 5: the package file
         ("Files", {"fields": ("package",)}),
     )
 

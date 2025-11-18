@@ -56,8 +56,10 @@
                 <div class="package-card-header folding_box_header"
                      onclick="toggleContent('{{ pack.name }}')">
                     <div class="package-name">
-                        <i class="fa-solid fa-cube"></i>
-                        {{ pack.name }}
+                        <a href="{% url 'detail_package' pack.name %}">
+                            <i class="fa-solid fa-cube"></i>
+                            {{ pack.name }}
+                        </a>
                     </div>
                     <a href="{% url 'detail_package' pack.name %}"
                        class="btn-icon"
@@ -87,7 +89,7 @@
                                 {% for flavor in flavors %}
                                     <div class="flavor-item">
                                         <span class="flavor-badge">
-                                            <i class="fa-brands fa-{{ flavor.os }}"></i>
+                                            <i class="fa-brands fa-{% if flavor.os == 'Linux' %}linux{% elif flavor.os == 'Windows' %}windows{% else %}diaspora{% endif %}"></i>
                                             {{ flavor.os }}
                                         </span>
                                         <span class="flavor-badge">

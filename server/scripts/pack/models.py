@@ -52,6 +52,9 @@ class PackageEntry(models.Model):
     dependencies = models.TextField(
         default="", verbose_name="Package dependencies", blank=True
     )
+    description = models.TextField(
+        default="", verbose_name="Package description", blank=True
+    )
 
     class Meta:
         """
@@ -361,9 +364,13 @@ def get_package_detail(name: str, get_filter: dict = {}):
     it = {
         "name": name,
         "versions": {},
+        "description": "",
+        "dependencies": [],
     }
     true_filter = convert_filter(get_filter)
     query = PackageEntry.objects.filter(name=name)
+    latest_entry = None
+    latest_date = old_date
     for q in query:
         if not q.match(true_filter):
             continue
@@ -371,6 +378,10 @@ def get_package_detail(name: str, get_filter: dict = {}):
         if q.build_date is None:
             q.build_date = old_date
             q.save()
+        # Track latest entry for description
+        if q.build_date > latest_date:
+            latest_date = q.build_date
+            latest_entry = q
         combination = {
             "os": q.get_os_display(),
             "arch": q.get_arch_display(),
@@ -385,6 +396,19 @@ def get_package_detail(name: str, get_filter: dict = {}):
         if q.version not in it["versions"].keys():
             it["versions"][q.version] = []
         it["versions"][q.version].append(combination)
+    # Get description from latest entry
+    if latest_entry and latest_entry.description:
+        it["description"] = latest_entry.description
+    if latest_entry and latest_entry.dependencies:
+        try:
+            import datetime
+
+            it["dependencies"] = eval(latest_entry.dependencies)
+        except Exception as e:
+            logger.warning(
+                f"Cannot parse dependencies of ({latest_entry.name}/{latest_entry.version}) '{latest_entry.dependencies}' : {e}"
+            )
+            it["dependencies"] = []
     return sort_a(it)
 
 
