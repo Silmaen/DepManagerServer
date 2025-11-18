@@ -1,10 +1,10 @@
-django==5.2.7
+django==5.2.8
 psycopg2-binary==2.9.11
-django-crispy-forms==2.4
+django-crispy-forms==2.5
 pillow==12.0.0
 python-dotenv==1.2.1
 pyyaml==6.0.3
 gunicorn==23.0.0
 requests-toolbelt==1.0.0
-black==25.9.0
+black==25.11.0
 markdown>=3.4.0

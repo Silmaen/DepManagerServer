@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-17 20:40+0100\n"
+"POT-Creation-Date: 2025-11-18 16:25+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -170,7 +170,7 @@ msgstr "View details"
 msgid "No packages match the search criteria"
 msgstr "No packages match the search criteria"
 
-#: server/data/templates/package_detail.html:16
+#: server/data/templates/package_detail.html:18
 #: server/data/templates/registration/login.html:58
 #: server/data/templates/registration/password_change_done.html:16
 #: server/data/templates/registration/password_change_form.html:45
@@ -183,23 +183,23 @@ msgstr "No packages match the search criteria"
 msgid "Back"
 msgstr "Back"
 
-#: server/data/templates/package_detail.html:26
+#: server/data/templates/package_detail.html:30
 msgid "No description available for this package."
 msgstr "No description available for this package."
 
-#: server/data/templates/package_detail.html:30
-msgid "Dependencies:"
-msgstr "Dependencies:"
+#: server/data/templates/package_detail.html:52
+msgid "Available Flavors"
+msgstr "Available Flavors"
 
-#: server/data/templates/package_detail.html:70
-msgid "This package has no dependencies."
-msgstr "This package has no dependencies."
+#: server/data/templates/package_detail.html:90
+msgid "Dependencies"
+msgstr "Dependencies"
 
-#: server/data/templates/package_detail.html:126
+#: server/data/templates/package_detail.html:127
 msgid "Delete this flavor"
 msgstr "Delete this flavor"
 
-#: server/data/templates/package_detail.html:127
+#: server/data/templates/package_detail.html:128
 msgid "Are you sure you want to delete this flavor?"
 msgstr "Are you sure you want to delete this flavor?"
 
@@ -490,6 +490,7 @@ msgid "Capability not recognized."
 msgstr "Capability not recognized."
 
 #: server/scripts/connector/decorators.py:115
+#, python-brace-format
 msgid ""
 "Capability '{capability}' has been removed from user {user.username} by "
 "{request.user.username}."
@@ -497,6 +498,8 @@ msgstr ""
 "Capability '{capability}' has been removed from user {user.username} by "
 "{request.user.username}."
 
+#: server/scripts/connector/decorators.py:128
+#, python-brace-format
 msgid ""
 "Capability '{capability}' has been granted to user {user.username} by "
 "{request.user.username}."
