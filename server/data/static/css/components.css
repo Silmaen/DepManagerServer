@@ -834,17 +834,24 @@ textarea::placeholder {
 
 .flavor-detail-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: var(--spacing-sm);
     padding: var(--spacing-md);
     background: var(--bg-body);
     border-radius: var(--border-radius-sm);
-    margin-bottom: var(--spacing-xs);
-    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
 }
 
 .flavor-detail-item:last-child {
     margin-bottom: 0;
+}
+
+.flavor-info-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
 }
 
 .flavor-badges {
@@ -856,7 +863,48 @@ textarea::placeholder {
 
 .flavor-size-badge {
     margin-left: auto;
-    padding-left: var(--spacing-md);
+}
+
+.flavor-dependencies {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm);
+    background: var(--bg-surface-hover);
+    border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--color-primary-light);
+}
+
+.dependencies-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.dependencies-list-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+}
+
+.dep-badge {
+    background: var(--bg-surface);
+    border-color: var(--color-primary-light);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.dep-name {
+    font-weight: 600;
+}
+
+.flavor-actions {
+    display: flex;
+    justify-content: flex-end;
 }
 
 @media (max-width: 768px) {
@@ -880,6 +928,23 @@ textarea::placeholder {
     }
 
     .flavor-detail-item button {
+        width: 100%;
+    }
+
+    .flavor-info-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .flavor-size-badge {
+        margin-left: 0;
+    }
+
+    .flavor-actions {
+        width: 100%;
+    }
+
+    .flavor-actions button {
         width: 100%;
     }
 }

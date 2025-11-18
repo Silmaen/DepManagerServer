@@ -322,17 +322,19 @@ def get_namelist(get_filter: dict):
 
 def sort_a(infos):
     """
+    Sort package versions and flavors.
 
-    :param infos:
-    :return:
+    :param infos: Package information dictionary
+    :return: Sorted package information
     """
     from copy import deepcopy
 
     def safe_int(val):
         """
+        Convert string to int safely.
 
-        :param val:
-        :return:
+        :param val: Value to convert
+        :return: Integer or original value
         """
         try:
             return int(val)
@@ -347,30 +349,35 @@ def sort_a(infos):
     s_infos = deepcopy(infos)
     s_infos["versions"] = {}
     for key in skey:
-        s_infos["versions"][key] = sorted(
-            infos["versions"][key],
-            key=lambda flavor: flavor["build_date"],
-            reverse=True,
-        )
+        s_infos["versions"][key] = {
+            "flavors": sorted(
+                infos["versions"][key]["flavors"],
+                key=lambda flavor: flavor["build_date"],
+                reverse=True,
+            )
+        }
     return s_infos
 
 
 def get_package_detail(name: str, get_filter: dict = {}):
     """
+    Get detailed information about a package including versions and dependencies.
 
-    :param name:
-    :return:
+    :param name: Package name
+    :param get_filter: Filter criteria
+    :return: Dictionary with package details
     """
     it = {
         "name": name,
         "versions": {},
         "description": "",
-        "dependencies": [],
     }
     true_filter = convert_filter(get_filter)
     query = PackageEntry.objects.filter(name=name)
-    latest_entry = None
-    latest_date = old_date
+
+    # Collect all entries sorted by date for description search
+    all_entries = []
+
     for q in query:
         if not q.match(true_filter):
             continue
@@ -378,10 +385,9 @@ def get_package_detail(name: str, get_filter: dict = {}):
         if q.build_date is None:
             q.build_date = old_date
             q.save()
-        # Track latest entry for description
-        if q.build_date > latest_date:
-            latest_date = q.build_date
-            latest_entry = q
+
+        all_entries.append(q)
+
         combination = {
             "os": q.get_os_display(),
             "arch": q.get_arch_display(),
@@ -392,23 +398,41 @@ def get_package_detail(name: str, get_filter: dict = {}):
             "package": q.package,
             "package_size": q.get_pretty_size_display(),
             "pk": q.pk,
+            "dependencies": [],
         }
-        if q.version not in it["versions"].keys():
-            it["versions"][q.version] = []
-        it["versions"][q.version].append(combination)
-    # Get description from latest entry
-    if latest_entry and latest_entry.description:
-        it["description"] = latest_entry.description
-    if latest_entry and latest_entry.dependencies:
-        try:
-            import datetime
 
-            it["dependencies"] = eval(latest_entry.dependencies)
-        except Exception as e:
-            logger.warning(
-                f"Cannot parse dependencies of ({latest_entry.name}/{latest_entry.version}) '{latest_entry.dependencies}' : {e}"
-            )
-            it["dependencies"] = []
+        # Parse dependencies for this specific flavor
+        if q.dependencies and q.dependencies.strip():
+            try:
+                import datetime
+
+                # Log for debugging
+                logger.debug(
+                    f"Parsing dependencies for {q.name}/{q.version}: {q.dependencies}"
+                )
+                parsed_deps = eval(q.dependencies)
+                if isinstance(parsed_deps, list):
+                    combination["dependencies"] = parsed_deps
+                    logger.debug(f"Successfully parsed {len(parsed_deps)} dependencies")
+                else:
+                    logger.warning(f"Dependencies is not a list: {type(parsed_deps)}")
+            except Exception as e:
+                logger.warning(
+                    f"Cannot parse dependencies of ({q.name}/{q.version}) '{q.dependencies}' : {e}"
+                )
+                combination["dependencies"] = []
+
+        if q.version not in it["versions"].keys():
+            it["versions"][q.version] = {"flavors": []}
+        it["versions"][q.version]["flavors"].append(combination)
+
+    # Search for description in entries sorted by build_date (most recent first)
+    sorted_entries = sorted(all_entries, key=lambda x: x.build_date, reverse=True)
+    for entry in sorted_entries:
+        if entry.description:
+            it["description"] = entry.description
+            break
+
     return sort_a(it)
 
 
