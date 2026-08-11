@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
       network: host
     ports:
-      - "8123:80"
+      - "${PORT:-8180}:80"
     env_file:
       - .env
     restart: unless-stopped
