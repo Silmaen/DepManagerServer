@@ -2,6 +2,13 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+> [!WARNING]
+> **This project is deprecated and no longer maintained.** 1.4.1 is the final release,
+> along with its client [DepManager](https://github.com/Silmaen/DepManager).
+> Please migrate to [Conan](https://conan.io) and a Conan remote (e.g. Artifactory CE).
+> Before shutting down an instance, back up its data volume (`DATA_DIR`, default `./data`):
+> it holds the package archives, the database and the logs.
+
 Simple repository server for the DepManager tool.
 
 This server aims to host all the packages built for [DepManager](https://github.com/Silmaen/DepManager).
@@ -113,42 +120,4 @@ UI can manager users, set database options, location of a file in the repository
 
 It can also browse through the packages in the server.
 
-## Roadmap
-
-- v1.5.0 (planned for 17-04-2026)
-    - [ ] Statistics module
-        - [ ] Package download statistics
-        - [ ] User Statistics
-        - [ ] Storage usage statistics
-    - [ ] Search capabilities
-        - [ ] Better UI for package search
-    - [ ] Allow server mirroring
-    - [ ] Add editing capabilities
-        - [ ] Edit package metadata in the UI
-        - [ ] View/Edit package content in the UI
-    - [ ] API improvements
-        - [ ] follow API adjustments in DepManager client
-    - [ ] Add recipe management
-        - [ ] Upload recipe files
-        - [ ] Browse recipes in the UI
-        - [ ] Link recipes to packages
-        - [ ] Download recipes from the client
-- v1.4.0 (18-11-2025)
-    - [X] Support for YAML file as package definition
-    - [X] Modernize the docker image backend
-    - [X] Modernize the web UI
-    - [X] Fix security issues
-    - [X] Improve logging
-    - [X] Multilanguage support
-    - [X] Support for package dependencies
-- v1.3.0 (17-06-2025)
-    - [X] User management
-        - [x] list users
-        - [x] create user
-        - [x] delete user
-        - [x] change user password
-    - [x] Basic server with package upload/download
-    - [x] User management
-    - [x] Package management in the UI
-        - [x] list packages
-        - [x] delete packages
+See [CHANGELOG.md](CHANGELOG.md) for the release history.
